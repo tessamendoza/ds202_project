@@ -1,0 +1,573 @@
+Description: Revision of (Revision of 00001)
+Samples selected:
+      ATUS 2004                                         regular
+      ATUS 2005                                         regular
+      ATUS 2006                                         regular
+      ATUS 2007                                         regular
+      ATUS 2008                                         regular
+      ATUS 2009                                         regular
+      ATUS 2010                                         regular
+      ATUS 2011                                         regular
+      ATUS 2012                                         regular
+      ATUS 2013                                         regular
+      ATUS 2014                                         regular
+      ATUS 2015                                         regular
+      ATUS 2016                                         regular
+      ATUS 2017                                         regular
+      ATUS 2018                                         regular
+      ATUS 2019                                         regular
+File Type:                    rectangular
+Case Selection:               No
+  Variable               Columns        Len    2004    2005    2006    2007    2008    2009    2010    2011    2012    2013    2014    2015    2016    2017    2018    2019   
+  RECTYPE            1   1              1      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  YEAR               1   2-6            5      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  CASEID             1   7-20          14      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  REGION             1  21              1      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  STATEFIP           1  22-23           2      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  MSASIZE            1  24              1      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  FAMINCOME          1  25-27           3      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  HH_SIZE            1  28-30           3      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  POVERTY130         1  31-32           2      .       .       X       X       X       .       .       .       .       .       X       X       X       .       .       . 
+  POVERTY185         1  33-34           2      .       .       X       X       X       .       .       .       .       .       X       X       X       .       .       . 
+  HH_CHILD           1  35-36           2      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  AGEYCHILD          1  37-39           3      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  HH_NUMADULTS       1  40-41           2      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  PERNUM             2  42-43           2      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  LINENO             2  44-46           3      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  WT06               2  47-63          17      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  AGE                2  64-66           3      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  SEX                2  67-68           2      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  RACE               2  69-72           4      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  MARST              2  73-74           2      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  GENHEALTH          2  75-76           2      .       .       X       X       X       .       X       X       X       X       X       X       X       .       .       . 
+  BMI                2  77-82           6      .       .       X       X       X       .       .       .       .       .       X       X       X       .       .       . 
+  EDUC               2  83-85           3      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  EDUCYRS            2  86-88           3      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  VETSTAT            2  89-90           2      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  MULTJOBS           2  91-92           2      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  OCC2               2  93-96           4      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  FULLPART           2  97-98           2      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  UHRSWORKT          2  99-102          4      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  SPEMPNOT           2 103-104          2      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  PED                2 105-108          4      .       .       X       X       X       .       .       .       .       .       X       X       X       .       .       . 
+  WBLADDER           2 109-111          3      .       .       .       .       .       .       .       .       X       X       .       .       .       .       .       . 
+  ACT_FOOD           2 112-115          4      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  ACT_PCARE          2 116-119          4      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  ACT_RELIG          2 120-123          4      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  ACT_SOCIAL         2 124-127          4      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  ACT_SPORTS         2 128-131          4      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  ACT_TRAVEL         2 132-135          4      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+  ACT_WORK           2 136-139          4      X       X       X       X       X       X       X       X       X       X       X       X       X       X       X       X 
+
+Variable Availability Key:
+All Years X - available in this sample
+All Years . - not available in this sample
+
+Time Use Variables:
+  ACT_FOOD
+    Activity specifications:
+      110000  Eating and Drinking
+
+
+    Time specifications:
+      4:00 am - 4:00 am
+
+    Secondary activity specifications: 
+      None specified
+
+    Location specifications:
+      None specified
+
+    With whom specifications:
+      None specified
+
+  ACT_PCARE
+    Activity specifications:
+      010000  Personal Care
+
+
+    Time specifications:
+      4:00 am - 4:00 am
+
+    Secondary activity specifications: 
+      None specified
+
+    Location specifications:
+      None specified
+
+    With whom specifications:
+      None specified
+
+  ACT_RELIG
+    Activity specifications:
+      140000  Religious and Spiritual Activities
+
+
+    Time specifications:
+      4:00 am - 4:00 am
+
+    Secondary activity specifications: 
+      None specified
+
+    Location specifications:
+      None specified
+
+    With whom specifications:
+      None specified
+
+  ACT_SOCIAL
+    Activity specifications:
+      120000  Socializing, Relaxing, and Leisure
+
+
+    Time specifications:
+      4:00 am - 4:00 am
+
+    Secondary activity specifications: 
+      None specified
+
+    Location specifications:
+      None specified
+
+    With whom specifications:
+      None specified
+
+  ACT_SPORTS
+    Activity specifications:
+      130000  Sports, Exercise, and Recreation
+
+
+    Time specifications:
+      4:00 am - 4:00 am
+
+    Secondary activity specifications: 
+      None specified
+
+    Location specifications:
+      None specified
+
+    With whom specifications:
+      None specified
+
+  ACT_TRAVEL
+    Activity specifications:
+      180000  Traveling
+
+
+    Time specifications:
+      4:00 am - 4:00 am
+
+    Secondary activity specifications: 
+      None specified
+
+    Location specifications:
+      None specified
+
+    With whom specifications:
+      None specified
+
+  ACT_WORK
+    Activity specifications:
+      050000  Work and Work-Related Activities
+
+
+    Time specifications:
+      4:00 am - 4:00 am
+
+    Secondary activity specifications: 
+      None specified
+
+    Location specifications:
+      None specified
+
+    With whom specifications:
+      None specified
+
+RECTYPE		Record type
+1		Household
+2		Person
+3		Activity
+4		Who
+5		Eldercare
+
+REGION		Region
+1		Northeast
+2		Midwest
+3		South
+4		West
+
+STATEFIP		FIPS State Code
+01		Alabama
+02		Alaska
+04		Arizona
+05		Arkansas
+06		California
+08		Colorado
+09		Connecticut
+10		Delaware
+11		District of Columbia
+12		Florida
+13		Georgia
+15		Hawaii
+16		Idaho
+17		Illinois
+18		Indiana
+19		Iowa
+20		Kansas
+21		Kentucky
+22		Louisiana
+23		Maine
+24		Maryland
+25		Massachusetts
+26		Michigan
+27		Minnesota
+28		Mississippi
+29		Missouri
+30		Montana
+31		Nebraska
+32		Nevada
+33		New Hampshire
+34		New Jersey
+35		New Mexico
+36		New York
+37		North Carolina
+38		North Dakota
+39		Ohio
+40		Oklahoma
+41		Oregon
+42		Pennsylvania
+44		Rhode Island
+45		South Carolina
+46		South Dakota
+47		Tennessee
+48		Texas
+49		Utah
+50		Vermont
+51		Virginia
+53		Washington
+54		West Virginia
+55		Wisconsin
+56		Wyoming
+
+MSASIZE		MSA/PMSA size
+0		Not identified or non-metropolitan
+2		100,000 - 249,999
+3		250,000 - 499,999
+4		500,000 - 999,999
+5		1,000,000 - 2,499,999
+6		2,500,000 - 4,999,999
+7		5,000,000+
+
+FAMINCOME		Family income
+001		Less than $5,000
+002		$5,000 to $7,499
+003		$7,500 to $9,999
+004		$10,000 to $12,499
+005		$12,500 to $14,999
+006		$15,000 to $19,999
+007		$20,000 to $24,999
+008		$25,000 to $29,999
+009		$30,000 to $34,999
+010		$35,000 to $39,999
+011		$40,000 to $49,999
+012		$50,000 to $59,999
+013		$60,000 to $74,999
+014		$75,000 to $99,999
+015		$100,000 to $149,999
+016		$150,000 and over
+996		Refused
+997		Don't know
+998		Blank
+
+HH_SIZE		Number of people in household
+001		1
+002		2
+003		3
+004		4
+005		5
+006		6
+007		7
+008		8
+009		9
+010		10
+011		11
+012		12
+013		13
+014		14
+015		15
+016		16
+999		NIU (Not in universe)
+
+POVERTY130		Household income greater or less than 130% of poverty level
+10		HH income lt or equal to 130% of poverty threshold
+11		HH income lt 130% of poverty threshold
+12		HH income equal to 130% of poverty threshold
+20		HH income gt 130% of poverty threshold
+96		Refused
+97		Don't know
+99		NIU (Not in universe)
+
+POVERTY185		Household income greater or less than 185% of poverty level
+10		HH income lt or equal to 185% of poverty threshold
+11		HH income lt 185% of poverty threshold
+12		HH income equal to 185% of poverty threshold
+20		HH income gt 185% of poverty threshold
+96		Refused
+97		Don't know
+99		NIU (Not in universe)
+
+HH_CHILD		Children under 18 in household
+00		No
+01		Yes
+99		NIU (Not in universe)
+
+AGEYCHILD		Age of youngest household child
+000		0
+001		1
+002		2
+003		3
+004		4
+005		5
+006		6
+007		7
+008		8
+009		9
+010		10
+011		11
+012		12
+013		13
+014		14
+015		15
+016		16
+017		17
+999		NIU (Not in universe)
+
+HH_NUMADULTS		Number of adults in household
+00		0
+01		1
+02		2
+03		3
+04		4
+05		5
+06		6
+07		7
+08		8
+09		9
+99		NIU (Not in universe)
+
+PERNUM		Person number (general)
+01		1
+02		2
+03		3
+04		4
+05		5
+06		6
+07		7
+08		8
+09		9
+10		10
+11		11
+12		12
+13		13
+14		14
+15		15
+16		16
+
+LINENO		Person line number
+001		1
+002		2
+003		3
+004		4
+005		5
+006		6
+007		7
+008		8
+009		9
+010		10
+011		11
+012		12
+013		13
+014		14
+015		15
+016		16
+017		17
+018		18
+019		19
+999		NIU (Not in universe)
+
+SEX		Sex
+01		Male
+02		Female
+99		NIU (Not in universe)
+
+RACE		Race
+		uber
+0100		White only
+0110		Black only
+0120		American Indian, Alaskan Native
+0130		Asian or Pacific Islander
+0131		Asian only
+0132		Hawaiian Pacific Islander only
+		uber
+0200		White-Black
+0201		White-American Indian
+0202		White-Asian
+0203		White-Hawaiian
+0210		Black-American Indian
+0211		Black-Asian
+0212		Black-Hawaiian
+0220		American Indian-Asian
+0221		American Indian-Hawaiian
+0230		Asian-Hawaiian
+0300		White-Black-American Indian
+0301		White-Black-Asian
+0302		White-Black-Hawaiian
+0310		White-American Indian-Asian
+0311		White-American Indian-Hawaiian
+0320		White-Asian-Hawaiian
+0330		Black-American Indian-Asian
+0331		Black-American Indian-Hawaiian
+0340		Black-Asian-Hawaiian
+0350		American Indian-Asian-Hawaiian
+0398		Other 3 race combinations
+0399		2 or 3 races, unspecified
+0400		White-Black-American Indian-Asian
+0401		White-Black-American Indian-Hawaiian
+0402		White-Black-Asian-Hawaiian
+0403		Black-American Indian-Asian-Hawaiian
+0404		White-American Indian-Asian-Hawaiian
+0500		White-Black-American Indian-Asian-Hawaiian
+0599		4 or 5 races, unspecified
+9999		NIU (Not in universe)
+
+MARST		Marital status
+01		Married - spouse present
+02		Married - spouse absent
+03		Widowed
+04		Divorced
+05		Separated
+06		Never married
+99		NIU (Not in universe)
+
+GENHEALTH		General health
+01		Excellent
+02		Very good
+03		Good
+04		Fair
+05		Poor
+96		Refused
+97		Don't know
+99		NIU (Not in universe)
+
+EDUC		Highest level of school completed
+		Less than HS diploma
+010		Less than 1st grade
+011		1st, 2nd, 3rd, or 4th grade
+012		5th or 6th grade
+013		7th or 8th grade
+014		9th grade
+015		10th grade
+016		11th grade
+017		12th grade - no diploma
+		HS diploma, no college
+020		High school graduate - GED
+021		High school graduate - diploma
+		Some college
+030		Some college but no degree
+031		Associate degree - occupational vocational
+032		Associate degree - academic program
+		College degree +
+040		Bachelor's degree (BA, AB, BS, etc.)
+041		Master's degree (MA, MS, MEng, MEd, MSW, etc.)
+042		Professional school degree (MD, DDS, DVM, etc.)
+043		Doctoral degree (PhD, EdD, etc.)
+999		NIU (Not in universe)
+
+EDUCYRS		Years of education
+100		Grades 1-12
+101		Less than first grade
+102		First through fourth grade
+105		Fifth through sixth grade
+107		Seventh through eighth grade
+109		Ninth grade
+110		Tenth grade
+111		Eleventh grade
+112		Twelfth grade
+200		College
+213		College--one year
+214		College--two years
+215		College--three years
+216		College--four years
+217		Bachelor's degree
+300		Advanced degree
+316		Master's degree
+317		Master's degree--one year program
+318		Master's degree--two year program
+319		Master's degree--three+ year program
+320		Professional degree
+321		Doctoral degree
+999		NIU (Not in universe)
+
+VETSTAT		Veteran status
+01		Veteran
+02		Non-veteran
+96		Refused
+97		Don't know
+99		NIU (Not in universe)
+
+MULTJOBS		Has more than one job
+00		No
+01		Yes
+99		NIU (Not in universe)
+
+OCC2		General occupation category, main job
+		Management, business, and financial occupations
+0110		Management occupations
+0111		Business and financial operations occupations
+		Professional and related occupations
+0120		Computer and mathematical science occupations
+0121		Architecture and engineering occupations
+0122		Life, physical, and social science occupations
+0123		Community and social service occupations
+0124		Legal occupations
+0125		Education, training, and library occupations
+0126		Arts, design, entertainment, sports, and media occupations
+0127		Healthcare practitioner and technical occupations
+		Service Occupations
+0130		Healthcare support occupations
+0131		Protective service occupations
+0132		Food preparation and serving related occupations
+0133		Building and grounds cleaning and maintenance occupations
+0134		Personal care and service occupations
+0140		Sales and related occupations
+0150		Office and administrative support occupations
+0160		Farming, fishing, and forestry occupations
+0170		Construction and extraction occupations
+0180		Installation, maintenance, and repair occupations
+0190		Production occupations
+0200		Transportation and material moving occupations
+9999		NIU (Not in universe)
+
+FULLPART		Full time/part time employment status
+01		Full time
+02		Part time
+99		NIU (Not in universe)
+
+SPEMPNOT		Employed (spouse or partner)
+00		Not employed
+01		Employed
+99		NIU (Not in universe)
+
+WBLADDER		Life satisfaction ladder
+000		Worst Possible Life
+001		
+002		
+003		
+004		
+005		
+006		
+007		
+008		
+009		
+010		Best Possible Life
+999		NIU (Not in universe)
