@@ -10,14 +10,13 @@ output: html_document
 ### Team Members
 Becca Barrick, Jay Maxwell, Jaeyeon Won, Alec Meyer, and Tessa Mendoza
 
-
-### Project Dataset
-
-
 ### Overview
 This dataset comes from IPUMS Time Use, a collaborative research effort that provides demographic, socioeconomic, household, and daily time use data from survey respondents. Specifically, our subset of data was extracted from the American Time Use Survey (ATUS) data, using the ATUS extract builder (timeuse.ipums.org). 
 
-The extracted dataset contains samples between 2004-2019... 
+The project dataset can be found as a .csv file (time.csv) in our GitHub Repository.The extracted dataset contains 39 variables for nearly 200,000 samples between 2004-2019. The dataset will be cleaned and decoded according to the codes provided by the ATUS extract builder. These codes can be viewed as a .txt file (codes.txt). 
+```{r}
+time <- read.csv("time.csv")
+```
 
 ### Purpose
 The goal of this project is to better understand how individuals in America have spent their time over the last 15 years. To do this, we have developed five general areas of exploration. These areas are highlighted in the following five research questions: 
