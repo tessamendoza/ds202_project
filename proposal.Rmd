@@ -4,3 +4,48 @@ author: "Group 8"
 date: "10/20/2020"
 output: html_document
 ---
+
+## The Clock is Ticking: How do Americans Spend their Time? 
+
+### Team Members
+Becca Barrick, Jay Maxwell, Jaeyeon Won, Alec Meyer, and Tessa Mendoza
+
+
+### Project Dataset
+
+
+### Overview
+This dataset comes from IPUMS Time Use, a collaborative research effort that provides demographic, socioeconomic, household, and daily time use data from survey respondents. Specifically, our subset of data was extracted from the American Time Use Survey (ATUS) data, using the ATUS extract builder (timeuse.ipums.org). 
+
+The extracted dataset contains samples between 2004-2019... 
+
+### Purpose
+The goal of this project is to better understand how individuals in America have spent their time over the last 15 years. To do this, we have developed five general areas of exploration. These areas are highlighted in the following five research questions: 
+
+How does demographic and living location affect time usage? What is the trend of time usage over the last 15 years? What is the relationship between perceived life satisfaction and how an individual spends their time? How does time usage relate to an individual's general health status? What variables affect work and travel time? 
+
+### Brief Plan for Exploratory Analysis
+The following questions provide a brief plan for how each research question will be addressed. 
+
+**Demographic and Living Location:**
+1) How does time usage differ between males and females? Between individuals of different race?
+2) Does region of living impact how an individual distributes their time?
+
+**Time Usage Over Time:**
+1) Has time spent engaged in religious and spiritual activities changed over the last 15 years?
+2) Are Americans working more or less than they used to? 
+
+**Life Satisfaction:**
+1) Which region in the US has the highest life satisfaction? least?
+2) Which region spends the most time working? 
+3) Which region is the most social? Does this correspond with life satisfaction?
+
+**Active Time:**
+1) Which age range spends the most time engaging in physical activity?
+2) How does an individual's health (BMI and general health) relate to the amount of time they spend being physically active? 
+3) Has the amount of active time increased or decreased over the last 15 years?
+
+**Work and Travel Time:**
+1) How does an individual's work time correspond to their income? travel time?
+2) Do parents with children at home travel more or less than individuals with no children at home? 
+
