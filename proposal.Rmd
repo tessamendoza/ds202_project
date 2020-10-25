@@ -1,50 +1,56 @@
 ---
 title: "Project Proposal"
-author: "Group 8"
-date: "10/20/2020"
+author: "Group 8 - Jaeyeon Won, Becca Barrick, Jay Maxwell, Alec Meyer, and Tessa Mendoza"
+date: "Due date: 10/26/2020"
 output: html_document
 ---
 
-## The Clock is Ticking: How do Americans Spend their Time? 
+## The Clock is Ticking: How Do Americans Spend Their Time? 
 
-### Team Members
-Becca Barrick, Jay Maxwell, Jaeyeon Won, Alec Meyer, and Tessa Mendoza
+### Data Set
+The dataset **time.cvs** can be found under https://github.com/tessamendoza/ds202_project.git. 
 
-### Overview
-This dataset comes from IPUMS Time Use, a collaborative research effort that provides demographic, socioeconomic, household, and daily time use data from survey respondents. Specifically, our subset of data was extracted from the American Time Use Survey (ATUS) data, using the ATUS extract builder (timeuse.ipums.org). 
 
-The project dataset can be found as a .csv file (time.csv) in our GitHub Repository.The extracted dataset contains 39 variables for nearly 200,000 samples between 2004-2019. The dataset will be cleaned and decoded according to the codes provided by the ATUS extract builder. These codes can be viewed as a .txt file (codes.txt). 
-```{r}
-time <- read.csv("time.csv")
-```
+### Overview of Data Set
+The dataset **time.cvs** comes from the **IPUMS Time Use**, a collaborative research effort that provides demographic, socioeconomic, household, and daily time use data from survey respondents. Specifically, the dataset was extracted from the **American Time Use Survey (ATUS)** (https://timeuse.ipums.org/), which provides U.S. time diary survey data for period since 2003, using the ATUS extract builder. The extracted dataset can be found as a .csv file (time.csv) in our GitHub Repository (https://github.com/tessamendoza/ds202_project.git).
+
+The **time** dataset contains 39 variables for approximately 189,866 observations collected from 2004 to 2019. Out of the 39 variables, 12 *(YEAR, HH_SIZE, HH_CHILD, HH_NUMADULTS, AGEYCHILD, PERNUM, LINENO, WT06, AGE, BMI, UHRSWORKT, ACT_FOOD, ACT_PCARE, ACT_RELIG, ACT_SOCIAL, ACT_SPORTS, ACT_TRAVEL, and ACT_WORK)* are quantitative variables, and the other 27 are categorical variables. Even though the categorical variables are all encoded as numbers, the codes provided by the ATUS extract builder gives the description of each variable and the categories. In the data cleaning process, the categories will be decoded and renamed with appropriate names based on the codes description. The codes can be found as a .txt file (codes.txt) in our GitHub Repository (https://github.com/tessamendoza/ds202_project.git).
+
 
 ### Purpose
-The goal of this project is to better understand how individuals in America have spent their time over the last 15 years. To do this, we have developed five general areas of exploration. These areas are highlighted in the following five research questions: 
+The ultimate goal of this project is to better understand how individuals in America have spent their time over the last 16 years (from 2004 to 2019). To achieve this, we have developed five general areas of exploration with the following five research questions: 
 
-How does demographic and living location affect time usage? What is the trend of time usage over the last 15 years? What is the relationship between perceived life satisfaction and how an individual spends their time? How does time usage relate to an individual's general health status? What variables affect work and travel time? 
+- How did the trend of time usage over the last 15 years change? 
+- How do demographics and living location affect time usage? 
+- How are the way an individual spends their time and their perceived life satisfaction related?
+- How are individual's time usage and their general health status related? 
+- What factors affect individual's work and travel time? 
 
 ### Brief Plan for Exploratory Analysis
-The following questions provide a brief plan for how each research question will be addressed. 
+The following specific questions provide a brief plan for how each research question will be addressed. 
 
-**Demographic and Living Location:**
-1) How does time usage differ between males and females? Between individuals of different race?
-2) Does region of living impact how an individual distributes their time?
-
-**Time Usage Over Time:**
+#### - How did the trend of time usage over the last 15 years change? (Becca)
 1) Has time spent engaged in religious and spiritual activities changed over the last 15 years?
 2) Are Americans working more or less than they used to? 
 
-**Life Satisfaction:**
+#### - How do demographics and living location affect time usage? (Jaeyeon)
+1) How does time usage differ for different age groups?
+2) How does time usage differ between females and males?
+3) How does time usage differ for different races?
+4) How are the region (Northwest, Midwest, South, West) and individual's time distribution related?
+5) How does time usage differ for each state? 
+
+#### -How are the way an individual spends their time and their perceived life satisfaction related? (Alec)
 1) Which region in the US has the highest life satisfaction? least?
 2) Which region spends the most time working? 
 3) Which region is the most social? Does this correspond with life satisfaction?
 
-**Active Time:**
+#### - How are individual's time usage and their general health status related? (Tessa)
 1) Which age range spends the most time engaging in physical activity?
 2) How does an individual's health (BMI and general health) relate to the amount of time they spend being physically active? 
 3) Has the amount of active time increased or decreased over the last 15 years?
 
-**Work and Travel Time:**
+#### - What factors affect individual's work and travel time? (Jay)
 1) How does an individual's work time correspond to their income? travel time?
 2) Do parents with children at home travel more or less than individuals with no children at home? 
 

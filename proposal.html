@@ -9,9 +9,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Group 8" />
+<meta name="author" content="Group 8 - Jaeyeon Won, Becca Barrick, Jay Maxwell, Alec Meyer, and Tessa Mendoza" />
 
-<meta name="date" content="2020-10-20" />
 
 <title>Project Proposal</title>
 
@@ -364,37 +363,77 @@ summary {
 
 
 <h1 class="title toc-ignore">Project Proposal</h1>
-<h4 class="author">Group 8</h4>
-<h4 class="date">10/20/2020</h4>
+<h4 class="author">Group 8 - Jaeyeon Won, Becca Barrick, Jay Maxwell, Alec Meyer, and Tessa Mendoza</h4>
+<h4 class="date">Due date: 10/26/2020</h4>
 
 </div>
 
 
 <div id="the-clock-is-ticking-how-do-americans-spend-their-time" class="section level2">
-<h2>The Clock is Ticking: How do Americans Spend their Time?</h2>
-<div id="team-members" class="section level3">
-<h3>Team Members</h3>
-<p>Becca Barrick, Jay Maxwell, Jaeyeon Won, Alec Meyer, and Tessa Mendoza</p>
+<h2>The Clock is Ticking: How Do Americans Spend Their Time?</h2>
+<div id="data-set" class="section level3">
+<h3>Data Set</h3>
+<p>The dataset <strong>time.cvs</strong> can be found under <a href="https://github.com/tessamendoza/ds202_project.git" class="uri">https://github.com/tessamendoza/ds202_project.git</a>.</p>
 </div>
-<div id="overview" class="section level3">
-<h3>Overview</h3>
-<p>This dataset comes from IPUMS Time Use, a collaborative research effort that provides demographic, socioeconomic, household, and daily time use data from survey respondents. Specifically, our subset of data was extracted from the American Time Use Survey (ATUS) data, using the ATUS extract builder (timeuse.ipums.org).</p>
-<p>The project dataset can be found as a .csv file (time.csv) in our GitHub Repository.The extracted dataset contains 39 variables for nearly 200,000 samples between 2004-2019.</p>
-<pre class="r"><code>time &lt;- read.csv(&quot;time.csv&quot;)</code></pre>
+<div id="overview-of-data-set" class="section level3">
+<h3>Overview of Data Set</h3>
+<p>The dataset <strong>time.cvs</strong> comes from the <strong>IPUMS Time Use</strong>, a collaborative research effort that provides demographic, socioeconomic, household, and daily time use data from survey respondents. Specifically, the dataset was extracted from the <strong>American Time Use Survey (ATUS)</strong> (<a href="https://timeuse.ipums.org/" class="uri">https://timeuse.ipums.org/</a>), which provides U.S. time diary survey data for period since 2003, using the ATUS extract builder. The extracted dataset can be found as a .csv file (time.csv) in our GitHub Repository (<a href="https://github.com/tessamendoza/ds202_project.git" class="uri">https://github.com/tessamendoza/ds202_project.git</a>).</p>
+<p>The <strong>time</strong> dataset contains 39 variables for approximately 189,866 observations collected from 2004 to 2019. Out of the 39 variables, 12 <em>(YEAR, HH_SIZE, HH_CHILD, HH_NUMADULTS, AGEYCHILD, PERNUM, LINENO, WT06, AGE, BMI, UHRSWORKT, ACT_FOOD, ACT_PCARE, ACT_RELIG, ACT_SOCIAL, ACT_SPORTS, ACT_TRAVEL, and ACT_WORK)</em> are quantitative variables, and the other 27 are categorical variables. Even though the categorical variables are all encoded as numbers, the codes provided by the ATUS extract builder gives the description of each variable and the categories. In the data cleaning process, the categories will be decoded and renamed with appropriate names based on the codes description. The codes can be found as a .txt file (codes.txt) in our GitHub Repository (<a href="https://github.com/tessamendoza/ds202_project.git" class="uri">https://github.com/tessamendoza/ds202_project.git</a>).</p>
 </div>
 <div id="purpose" class="section level3">
 <h3>Purpose</h3>
-<p>The goal of this project is to better understand how individuals in America have spent their time over the last 15 years. To do this, we have developed five general areas of exploration. These areas are highlighted in the following five research questions:</p>
-<p>How does demographic and living location affect time usage? What is the trend of time usage over the last 15 years? What is the relationship between perceived life satisfaction and how an individual spends their time? How does time usage relate to an individual’s general health status? What variables affect work and travel time?</p>
+<p>The ultimate goal of this project is to better understand how individuals in America have spent their time over the last 16 years (from 2004 to 2019). To achieve this, we have developed five general areas of exploration with the following five research questions:</p>
+<ul>
+<li>How did the trend of time usage over the last 15 years change?</li>
+<li>How do demographics and living location affect time usage?</li>
+<li>How are the way an individual spends their time and their perceived life satisfaction related?</li>
+<li>How are individual’s time usage and their general health status related?</li>
+<li>What factors affect individual’s work and travel time?</li>
+</ul>
 </div>
 <div id="brief-plan-for-exploratory-analysis" class="section level3">
 <h3>Brief Plan for Exploratory Analysis</h3>
-<p>The following questions provide a brief plan for how each research question will be addressed.</p>
-<p><strong>Demographic and Living Location:</strong> 1) How does time usage differ between males and females? Between individuals of different race? 2) Does region of living impact how an individual distributes their time?</p>
-<p><strong>Time Usage Over Time:</strong> 1) Has time spent engaged in religious and spiritual activities changed over the last 15 years? 2) Are Americans working more or less than they used to?</p>
-<p><strong>Life Satisfaction:</strong> 1) Which region in the US has the highest life satisfaction? least? 2) Which region spends the most time working? 3) Which region is the most social? Does this correspond with life satisfaction?</p>
-<p><strong>Active Time:</strong> 1) Which age range spends the most time engaging in physical activity? 2) How does an individual’s health (BMI and general health) relate to the amount of time they spend being physically active? 3) Has the amount of active time increased or decreased over the last 15 years?</p>
-<p><strong>Work and Travel Time:</strong> 1) How does an individual’s work time correspond to their income? travel time? 2) Do parents with children at home travel more or less than individuals with no children at home?</p>
+<p>The following specific questions provide a brief plan for how each research question will be addressed.</p>
+<div id="how-did-the-trend-of-time-usage-over-the-last-15-years-change-becca" class="section level4">
+<h4>- How did the trend of time usage over the last 15 years change? (Becca)</h4>
+<ol style="list-style-type: decimal">
+<li>Has time spent engaged in religious and spiritual activities changed over the last 15 years?</li>
+<li>Are Americans working more or less than they used to?</li>
+</ol>
+</div>
+<div id="how-do-demographics-and-living-location-affect-time-usage-jaeyeon" class="section level4">
+<h4>- How do demographics and living location affect time usage? (Jaeyeon)</h4>
+<ol style="list-style-type: decimal">
+<li>How does time usage differ for different age groups?</li>
+<li>How does time usage differ between females and males?</li>
+<li>How does time usage differ for different races?</li>
+<li>How are the region (Northwest, Midwest, South, West) and individual’s time distribution related?</li>
+<li>How does time usage differ for each state?</li>
+</ol>
+</div>
+<div id="how-are-the-way-an-individual-spends-their-time-and-their-perceived-life-satisfaction-related-alec" class="section level4">
+<h4>-How are the way an individual spends their time and their perceived life satisfaction related? (Alec)</h4>
+<ol style="list-style-type: decimal">
+<li>Which region in the US has the highest life satisfaction? least?</li>
+<li>Which region spends the most time working?</li>
+<li>Which region is the most social? Does this correspond with life satisfaction?</li>
+</ol>
+</div>
+<div id="how-are-individuals-time-usage-and-their-general-health-status-related-tessa" class="section level4">
+<h4>- How are individual’s time usage and their general health status related? (Tessa)</h4>
+<ol style="list-style-type: decimal">
+<li>Which age range spends the most time engaging in physical activity?</li>
+<li>How does an individual’s health (BMI and general health) relate to the amount of time they spend being physically active?</li>
+<li>Has the amount of active time increased or decreased over the last 15 years?</li>
+</ol>
+</div>
+<div id="what-factors-affect-individuals-work-and-travel-time-jay" class="section level4">
+<h4>- What factors affect individual’s work and travel time? (Jay)</h4>
+<ol style="list-style-type: decimal">
+<li>How does an individual’s work time correspond to their income? travel time?</li>
+<li>Do parents with children at home travel more or less than individuals with no children at home?</li>
+</ol>
+</div>
 </div>
 </div>
 
