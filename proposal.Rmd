@@ -1,11 +1,13 @@
 ---
 title: "Project Proposal"
-author: "Group 8 - Jaeyeon Won, Becca Barrick, Jay Maxwell, Alec Meyer, and Tessa Mendoza"
+author: 
+- Team Members - Jaeyeon Won, Becca Barrick, Jay Maxwell, Alec Meyer, and Tessa Mendoza
+- Project Coordinator - Jaeyeon Won
 date: "Due date: 10/26/2020"
 output: html_document
 ---
 
-## The Clock is Ticking: How Do Americans Spend Their Time? 
+## **The Clock is Ticking: How Do Americans Spend Their Time?** 
 
 ### Data Set
 The dataset **time.cvs** can be found under https://github.com/tessamendoza/ds202_project.git. 
