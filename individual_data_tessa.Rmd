@@ -171,4 +171,27 @@ ggplot(bmiStatus, aes(x = bmiStatus, y = avg_active)) + geom_bar(stat = 'identit
 
 ```
 
+## General Health
+
+The general distribution is as shown below: A majority of respondents consider themselves in 'very good' or 'good' health. 
+```{r}
+health <- bmi %>%
+  filter(!is.na(GENHEALTH)) %>%
+  filter(GENHEALTH != 99)
+health$GENHEALTH <- factor(health$GENHEALTH, levels = c(1, 2, 3, 4, 5, 96, 97), 
+                     labels = c("Excellent", "Very good", "Good", "Fair", "Poor", "Refused", "Don't know"))
+
+ggplot(health, aes(x = GENHEALTH)) + geom_bar() + labs(x = "General Health", y = "Number of Respondents", title = 'Distribution of Self-Reported General Health Status')
+
+```
+
+Interestingly, there is a general positive correlation between an individual's amount of activity time and their perceived health level. That is, those who consider themselves in good health tend to be more active. Is there a causal relationship? Do active individuals end up more healthy? Or are healthy individuals more able to complete physical activity? 
+
+```{r}
+healthTable <- health %>%
+  group_by(GENHEALTH) %>%
+  summarise(avg_time = mean(ACT_SPORTS))
+ggplot(healthTable, aes(x = GENHEALTH, y = avg_time)) + geom_bar(stat = 'identity') + labs(x = "General Health", y = "Average Active Time (min/day)", title = 'Average Active Time by General Health Rating')
+
+```
 
