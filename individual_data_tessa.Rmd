@@ -1,0 +1,110 @@
+---
+title: "Tessa's Data Exploration"
+author: "Tessa Mendoza"
+date: "11/10/2020"
+output: html_document
+---
+#How are individual's time usage and their general health status related?
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(ggthemes)
+```
+
+## The Dataset
+```{r}
+time <- read.csv("https://raw.githubusercontent.com/tessamendoza/ds202_project/main/time.csv")
+```
+
+## Which age range spends the most time engaging in physical activity?
+
+The age range of individuals in the dataset is 15-85 years of age. There are no NA values to handle before working with the data. 
+```{r}
+min(time$AGE) 
+max(time$AGE) 
+nrow(time[is.na(time$ACT_SPORTS),]) # no NA values to handle
+```
+Exploring the data distribution..
+```{r}
+age <- time %>%
+  mutate(age = floor(AGE))
+ggplot(age, aes(x = AGE, y = ACT_SPORTS)) + geom_point()
+```
+
+The 15-19 year old group spends, on average, the greatest time doing sports, exercise and recreation - over double the amount of time compared to every other age group. Activity level tends to decline as age increases. 
+```{r}
+age <- time %>% 
+  mutate(agegroup = case_when(AGE >= 15  & AGE <= 19 ~ '15-19',
+                              AGE >= 20  & AGE <= 29 ~ '20-29',
+                              AGE >= 30  & AGE <= 39 ~ '30-39',
+                              AGE >= 40  & AGE <= 49 ~ '40-49',
+                              AGE >= 50  & AGE <= 59 ~ '50-59',
+                              AGE >= 60  & AGE <= 69 ~ '60-69',
+                              AGE >= 70  & AGE <= 79 ~ '70-79',
+                              AGE >= 80  & AGE <= 89 ~ '80-89',
+                              AGE >= 20  & AGE <= 29 ~ '20-29'))
+
+sportsByAge <- age %>%
+  group_by(agegroup) %>%
+  summarise(avg_time = mean(ACT_SPORTS))
+
+ggplot(sportsByAge, aes(x = agegroup, y = avg_time)) + geom_bar(stat = 'identity') + 
+  labs(x = "Age Group", y = "Average Active Time (min)", title = "Average Active Time (Sports, Exercise, and Recreation) by Age Group")
+```
+
+## Does time spent engaging in sports/exercise/recreation vary by state?
+
+Yes! In general, the northwest regions are among the most active, while states in the south (especially southeast) are less active. 
+```{r}
+states <- map_data('state')
+state_codes <- read.table("https://raw.githubusercontent.com/tessamendoza/ds202_project/main/state_codes.csv", sep = ",", header = TRUE)
+
+state_codes <- state_codes %>%
+  mutate(STATE = tolower(STATE))
+
+sportsByState <- age %>%
+  group_by(STATEFIP) %>%
+  summarize(avgTime = mean(ACT_SPORTS)) %>%
+  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+
+stateMap <- states %>%
+  left_join(sportsByState, by = c('region' = 'STATE'))
+
+ggplot(stateMap %>% group_by(region), aes(x=long, y=lat, fill = avgTime)) + 
+  geom_polygon(aes(group=group)) + theme_map() + labs(title = "Average Active Time (Sports, Exercise, and Recreation) by State")
+
+```
+
+The five most active states are Vermont, Montana, Hawaii, Wyoming, and Colorado  - each averaging between 25 and 30 active minutes per day. 
+```{r}
+mostActive5 <- sportsByState %>%
+  arrange(desc(avgTime)) %>%
+  head(5)
+mostActive5
+```
+
+The least active states are Delaware, Alabama, Mississippi, South Carolina, and Louisiana - each averaging between 13 and 16 active minutes per day.
+```{r}
+leastActive5 <- sportsByState %>%
+  arrange(avgTime) %>%
+  head(5)
+leastActive5
+```
+
+## Do activity levels among youth (individuals under 20) vary by state?
+
+States in the midwest and northwest tend to have more active youth than states in the southwest and southeast regions. Vermont has the most active youth.
+```{r}
+youthByState <- age %>%
+  filter(AGE <= 20) %>%
+  group_by(STATEFIP) %>%
+  summarize(avgTime = mean(ACT_SPORTS)) %>%
+  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+
+youthStateMap <- states %>%
+  left_join(youthByState, by = c('region' = 'STATE'))
+
+ggplot(youthStateMap %>% group_by(region), aes(x=long, y=lat, fill = avgTime)) + 
+  geom_polygon(aes(group=group)) + theme_map() + labs(title = "Youth (under 20) Active Time by State") + scale_fill_viridis_c(option = "C")
+```
+
