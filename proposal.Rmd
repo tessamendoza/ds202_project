@@ -33,6 +33,7 @@ The following questions provide a brief plan for how each research question will
 **Time Usage Over Time:**
 1) Has time spent engaged in religious and spiritual activities changed over the last 15 years?
 2) Are Americans working more or less than they used to? 
+3) How has time spent working changed in various regions of the US?
 
 **Life Satisfaction:**
 1) Which region in the US has the highest life satisfaction? least?
