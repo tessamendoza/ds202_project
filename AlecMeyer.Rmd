@@ -1,0 +1,48 @@
+---
+title: "AlecMeyerData"
+author: "Alec Meyer"
+date: "11/10/2020"
+output: html_document
+---
+1) Which region in the US has the highest life satisfaction? least?
+2) Which region spends the most time working? 
+3) Which region is the most social? Does this correspond with life satisfaction?
+4) What are the different ways people spend time?
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+library(ipumsr)
+```
+
+Load data
+```{r}
+time <-read_csv("timeAdjustedAlec.csv")
+```
+
+What are the different ways people spend time?
+```{r}
+time1 <- time %>%
+  group_by(WBLADDER, ACT_FOOD, ACT_PCARE, ACT_RELIG, ACT_SOCIAL, ACT_SPORTS, ACT_TRAVEL, ACT_WORK) %>%
+  summarise(num = n()) %>%
+  filter(WBLADDER != 999) 
+
+time1$WBLADDER <- factor(time1$WBLADDER, labels = c("Worst", "Horrible", "Bad", "Sucks", "Alright", "Fine", "Good", "Great", "Amazing", "The greatest", "Best"))
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_FOOD)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Food")
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_SPORTS)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Sports")
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_RELIG)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "RELIG")
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_SOCIAL)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Social")
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_TRAVEL)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Travel")
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_WORK)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Work")
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_PCARE)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Personal Care")
+
+```
+
+
