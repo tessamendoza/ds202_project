@@ -23,11 +23,12 @@ time <-read_csv("timeAdjustedAlec.csv")
 What are the different ways people spend time?
 ```{r}
 time1 <- time %>%
-  group_by(WBLADDER, ACT_FOOD, ACT_PCARE, ACT_RELIG, ACT_SOCIAL, ACT_SPORTS, ACT_TRAVEL, ACT_WORK) %>%
+  group_by(WBLADDER, REGION, ACT_FOOD, ACT_PCARE, ACT_RELIG, ACT_SOCIAL, ACT_SPORTS, ACT_TRAVEL, ACT_WORK) %>%
   summarise(num = n()) %>%
   filter(WBLADDER != 999) 
 
 time1$WBLADDER <- factor(time1$WBLADDER, labels = c("Worst", "Horrible", "Bad", "Sucks", "Alright", "Fine", "Good", "Great", "Amazing", "The greatest", "Best"))
+time1$REGION <- factor(time1$REGION, labels = c("Northeast", "Midwest", "South", "West"))
 
 ggplot(time1, aes(x = WBLADDER, y = ACT_FOOD)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Food")
 
@@ -42,7 +43,12 @@ ggplot(time1, aes(x = WBLADDER, y = ACT_TRAVEL)) + geom_bar(stat = "summary", fu
 ggplot(time1, aes(x = WBLADDER, y = ACT_WORK)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Work")
 
 ggplot(time1, aes(x = WBLADDER, y = ACT_PCARE)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Personal Care")
+```
 
+```{r}
+ggplot(time1, aes(fill = REGION, x = WBLADDER, y = ACT_FOOD)) + geom_bar(stat = "summary", fun.y = "mean", position = "dodge") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Food")
+
+ggplot(time1, aes(fill = REGION, x = WBLADDER, y = ACT_WORK)) + geom_bar(stat = "summary", fun.y = "mean", position = "dodge") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Work")
 ```
 
 
