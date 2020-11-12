@@ -1,0 +1,67 @@
+---
+title: "BeccaBarrickData"
+author: "Becca Barrick"
+date: "11/11/2020"
+output: html_document
+---
+
+#**Time Usage Over Time:**
+
+Our dataset
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+library(ipumsr)
+
+library(readr)
+time <- read_csv("ds202_project/ds202_project/time.csv")
+#View(time)
+
+```
+
+1) Has time spent engaged in religious and spiritual activities changed over the last 15 years?
+
+```{r cars}
+
+time %>% 
+  rename(religion = ACT_RELIG) %>%
+  ggplot(time, mapping = aes(x=YEAR, y=religion)) + geom_point()
+
+```
+
+The amount of time people spend participating in religious activities has remained stable since 2004. Every year, the majority is just below 500 hours per year with a few outliers that spend much larger amounts of time, even going to 1000 hours per year. Numbers have been relatively lower since 2013. 
+
+
+2) Are Americans working more or less than they used to? 
+ 
+```{r pressure, echo=FALSE}
+
+time$SEX <- factor(time$SEX, levels = c(1, 2), 
+                 labels = c("M", "F"))
+
+time %>% ggplot(time, mapping = aes(x = YEAR, y = ACT_WORK)) + geom_point() 
+
+ggplot(time, mapping = aes(x = YEAR, y = ACT_WORK, fill=SEX)) + geom_point()+ 
+  labs(x = "Year", y = "Time Working") +
+  scale_color_manual(values=c("blue", "red"))
+
+```
+
+The time spent working has also remained pretty stable since 2004. Most people spend at least 1000 hours a year at work and many people spend up to 1500 a year working. I did the math and a 40 hour work week for all 52 weeks of the year comes out to be about 2080 hours. Obviously not everyone works every single day for that long due to holidays, appointments, and vacations, but 2080 is a baseline for hours worked by lots of people in America. There is a slight dip in hours worked in 2013, 2016, and 2018. This could be due to the increase in non-traditional work that can be done remotely or quicker due to technology.
+
+
+3) How has time spent working changed in various regions of the US?
+
+```{r pressure, echo=FALSE}
+
+time$REGION <- factor(time$REGION, labels = c("Northeast", "Midwest", "South", "West"))
+
+ggplot(time, aes(x = YEAR, y = ACT_WORK, fill = SEX)) + facet_grid(~REGION) + geom_bar(stat = 'identity') +
+  scale_fill_manual(values=c("#1287C9", "#AB3F54")) +
+  labs(x = "Year", y = "Hours spent working")
+
+```
+
+Across all regions, hours spent working has been steadily decreasing since 2004. The decline seems to be similar across all regions, with no region seeing a more significant change than any other. The region with the people who work the most is the south. People in the south spend more time working than any other region by quite a significant amount. The midwest and the west have peopel who work similar amounts, and the northeast is where the people who spend the least amount of time working live. 
