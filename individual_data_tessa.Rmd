@@ -1,0 +1,197 @@
+---
+title: "Tessa's Data Exploration"
+author: "Tessa Mendoza"
+date: "11/10/2020"
+output: html_document
+---
+#How are individual's time usage and their general health status related?
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(ggthemes)
+```
+
+## The Dataset
+```{r}
+time <- read.csv("https://raw.githubusercontent.com/tessamendoza/ds202_project/main/time.csv")
+```
+
+## Physical Activity
+
+#### Which age range spends the most time engaging in physical activity?
+
+The age range of individuals in the dataset is 15-85 years of age. There are no NA values to handle before working with the data. 
+```{r}
+min(time$AGE) 
+max(time$AGE) 
+nrow(time[is.na(time$ACT_SPORTS),]) # no NA values to handle
+```
+Exploring the data distribution..
+```{r}
+age <- time %>%
+  mutate(age = floor(AGE))
+ggplot(age, aes(x = AGE, y = ACT_SPORTS)) + geom_point()
+```
+
+The 15-19 year old group spends, on average, the greatest time doing sports, exercise and recreation - over double the amount of time compared to every other age group. Activity level tends to decline as age increases. 
+```{r}
+age <- time %>% 
+  mutate(agegroup = case_when(AGE >= 15  & AGE <= 19 ~ '15-19',
+                              AGE >= 20  & AGE <= 29 ~ '20-29',
+                              AGE >= 30  & AGE <= 39 ~ '30-39',
+                              AGE >= 40  & AGE <= 49 ~ '40-49',
+                              AGE >= 50  & AGE <= 59 ~ '50-59',
+                              AGE >= 60  & AGE <= 69 ~ '60-69',
+                              AGE >= 70  & AGE <= 79 ~ '70-79',
+                              AGE >= 80  & AGE <= 89 ~ '80-89',
+                              AGE >= 20  & AGE <= 29 ~ '20-29'))
+
+sportsByAge <- age %>%
+  group_by(agegroup) %>%
+  summarise(avg_time = mean(ACT_SPORTS))
+
+ggplot(sportsByAge, aes(x = agegroup, y = avg_time)) + geom_bar(stat = 'identity') + 
+  labs(x = "Age Group", y = "Average Active Time (min)", title = "Average Active Time (Sports, Exercise, and Recreation) by Age Group")
+```
+
+#### Does time spent engaging in sports/exercise/recreation vary by state?
+
+Yes! In general, the northwest regions are among the most active, while states in the south (especially southeast) are less active. 
+```{r}
+states <- map_data('state')
+state_codes <- read.table("https://raw.githubusercontent.com/tessamendoza/ds202_project/main/state_codes.csv", sep = ",", header = TRUE)
+
+state_codes <- state_codes %>%
+  mutate(STATE = tolower(STATE))
+
+sportsByState <- age %>%
+  group_by(STATEFIP) %>%
+  summarize(avgTime = mean(ACT_SPORTS)) %>%
+  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+
+stateMap <- states %>%
+  left_join(sportsByState, by = c('region' = 'STATE'))
+
+ggplot(stateMap %>% group_by(region), aes(x=long, y=lat, fill = avgTime)) + 
+  geom_polygon(aes(group=group)) + theme_map() + labs(title = "Average Active Time (min/day) by State")
+
+```
+
+The five most active states are Vermont, Montana, Hawaii, Wyoming, and Colorado  - each averaging between 25 and 30 active minutes per day. 
+```{r}
+mostActive5 <- sportsByState %>%
+  arrange(desc(avgTime)) %>%
+  head(5)
+mostActive5
+```
+
+The least active states are Delaware, Alabama, Mississippi, South Carolina, and Louisiana - each averaging between 13 and 16 active minutes per day.
+```{r}
+leastActive5 <- sportsByState %>%
+  arrange(avgTime) %>%
+  head(5)
+leastActive5
+```
+
+#### Do activity levels among youth (individuals under 20) vary by state?
+
+States in the midwest and northwest tend to have more active youth than states in the southwest and southeast regions. Vermont has the most active youth.
+```{r}
+youthByState <- age %>%
+  filter(AGE <= 20) %>%
+  group_by(STATEFIP) %>%
+  summarize(avgTime = mean(ACT_SPORTS)) %>%
+  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+
+youthStateMap <- states %>%
+  left_join(youthByState, by = c('region' = 'STATE'))
+
+ggplot(youthStateMap %>% group_by(region), aes(x=long, y=lat, fill = avgTime)) + 
+  geom_polygon(aes(group=group)) + theme_map() + labs(title = "Youth (under 20) Active Time (min/day) by State")
+```
+
+## BMI
+
+#### What is the distribution of BMI among respondants?
+
+
+The following plot shows the distribution of BMI's among individuals. The BMI data was recorded between 2006-2008 and 2014-2016. The BMI ranges (underweight, normal, overweight, and obese), are determined according to the Centers for Disease Control (CDC) standard. It is important to note that BMI is NOT the most accurate predictor of health status, however, it is a useful tool and provides a general marker for individual health, especially on a large-scale level. More information on BMI can be found here: https://www.cdc.gov/obesity/adult/defining.html. 
+```{r}
+bmi <- age %>%
+  filter(YEAR == 2006 | YEAR == 2007 | YEAR == 2008 |
+           YEAR == 2014 | YEAR == 2015 | YEAR == 2016) %>%
+  filter(!is.na(BMI)) %>%
+  filter(BMI < 500)
+
+bmi$bmiStatus <- ifelse(bmi$BMI < 18.5, "underweight", 
+                        ifelse(bmi$BMI < 25, "normal",
+                        ifelse(bmi$BMI < 30, "overweight", 
+                               "obese")))
+
+ggplot(bmi, aes(x = BMI, fill = bmiStatus, color = bmiStatus)) + geom_histogram(position = 'identity', bins = 30, alpha = 0.5) + 
+  scale_fill_manual(values = c("#28C40C", "#DE2905", "#E8A201", "#8E9CA1")) +
+  scale_color_manual(values = c("#28C40C", "#DE2905", "#E8A201", "#8E9CA1")) + 
+  labs(y = "Number of Respondants", title = 'Distribution of BMI')
+
+```
+
+```{r}
+ggplot(bmi, aes (x = agegroup, y = BMI)) + geom_boxplot() +
+  labs(x = "Age", title = "BMI by Age Group")
+
+```
+
+Colorado and Vermont have the healthiest individuals according to BMI, with the west coast, northeast, and Florida following closely behind. The midwest has a higher BMI and south regions have higher BMI, as does West Virginia.
+```{r}
+bmiByState <- bmi %>%
+  group_by(STATEFIP) %>%
+  summarize(avg_BMI = mean(BMI)) %>%
+  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+
+bmiStateMap <- states %>%
+  left_join(bmiByState, by = c('region' = 'STATE'))
+
+ggplot(bmiStateMap %>% group_by(region), aes(x=long, y=lat, fill = avg_BMI)) + 
+  geom_polygon(aes(group=group)) + theme_map() + labs(title = "Average Body Mass Index (BMI) by State") + scale_fill_viridis_c(option = "C")
+
+```
+
+#### How does an individual's health (BMI and general health) relate to the amount of time they spend being physically active? 
+
+Interestingly, the average active time for each BMI category does not directly relate to the average number of minutes spent engaging in activity per day.
+
+```{r}
+bmiStatus <- bmi %>%
+  mutate(bmiStatus = fct_relevel(bmiStatus, 
+                            "underweight", "normal", "overweight", "obese")) %>%
+  group_by(bmiStatus) %>%
+  summarise(avg_active = mean(ACT_SPORTS))
+
+ggplot(bmiStatus, aes(x = bmiStatus, y = avg_active)) + geom_bar(stat = 'identity') + labs(x = "BMI", y = "Average Active Time (min/day)", title = 'Activity Levels by BMI Range')
+
+```
+
+## General Health
+
+The general distribution is as shown below: A majority of respondents consider themselves in 'very good' or 'good' health. 
+```{r}
+health <- bmi %>%
+  filter(!is.na(GENHEALTH)) %>%
+  filter(GENHEALTH != 99)
+health$GENHEALTH <- factor(health$GENHEALTH, levels = c(1, 2, 3, 4, 5, 96, 97), 
+                     labels = c("Excellent", "Very good", "Good", "Fair", "Poor", "Refused", "Don't know"))
+
+ggplot(health, aes(x = GENHEALTH)) + geom_bar() + labs(x = "General Health", y = "Number of Respondents", title = 'Distribution of Self-Reported General Health Status')
+
+```
+
+Interestingly, there is a general positive correlation between an individual's amount of activity time and their perceived health level. That is, those who consider themselves in good health tend to be more active. Is there a causal relationship? Do active individuals end up more healthy? Or are healthy individuals more able to complete physical activity? 
+
+```{r}
+healthTable <- health %>%
+  group_by(GENHEALTH) %>%
+  summarise(avg_time = mean(ACT_SPORTS))
+ggplot(healthTable, aes(x = GENHEALTH, y = avg_time)) + geom_bar(stat = 'identity') + labs(x = "General Health", y = "Average Active Time (min/day)", title = 'Average Active Time by General Health Rating')
+
+```
+
