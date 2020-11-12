@@ -1,0 +1,254 @@
+---
+title: "The Clock is Ticking: How Do Americans Spend Their Time?"
+output: html_document
+---
+
+#### Team Members: 
+Jaeyeon Won (Project Coordinator), Becca Barrick, Jay Maxwell, Alec Meyer, and Tessa Mendoza
+
+
+## Overview
+This project aims to look at how Americans spend their time. The dataset used in this project, *time.cvs*, comes from *IPUMS Time Use*, a collaborative research effort that provides demographic, socioeconomic, household, and daily time use data from survey respondents.
+
+
+## Dataset
+The dataset was extracted from the *American Time Use Survey (ATUS)* (https://timeuse.ipums.org/), which provides U.S. time diary survey data for period since 2003, using the ATUS extract builder. The dataset *time.cvs* can be found at https://github.com/tessamendoza/ds202_project.git. 
+
+
+#### Cleaning the Datset
+The data cleaning process was made relatively simple by the ATUS extract builder, since we were able to export the dataset directly as a .csv file (allowing us to upload it to GitHub for collaborative use). Using the extract builder, we chose the variables most important to our exploration, therefore eliminating unnecessary columns. This left us with 6 time use variables and 33 additional variables. Our extracted dataset contains approximately 189,866 observations collected from 2004 to 2019. The categorical variables in the dataset are encoded as numerical values, and the codes provided by the ATUS extract builder can be found in a .txt file (codes.txt) in our GitHub Repository.
+
+
+## Exploratory Analysis
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+```
+
+```{r}
+time <- read.csv("https://raw.githubusercontent.com/tessamendoza/ds202_project/main/time.csv")
+```
+
+```{r}
+# My thought is that the set of questions above (Jaeyeon's questions) could be used as our summary infographics, as they give an overview of the data and its distribution.. So, any visuals for different age groups, gender, races, and regions could be shown as a highlight (probably wouldn't need to list the questions) and the rest of our questions could be included below. This is similar to how the example groups presented their data. 
+```
+
+## Purpose and Questions
+The ultimate goal of this project is to better understand how individuals in America have spent their time over the last 16 years (from 2004 to 2019). To achieve this, we have developed five general areas of exploration with the following five research questions: 
+
+- How did the trend of time usage over the last 15 years change? 
+- How do demographics and living location affect time usage? 
+- How are the way an individual spends their time and their perceived life satisfaction related?
+- How are individual's time usage and their general health status related? 
+- What factors affect individual's work and travel time? 
+
+### Time Use over Time
+
+##### Has time spent engaged in religious and spiritual activities changed over the last 15 years?
+
+##### Are Americans working more or less than they used to? 
+
+### Life Satisfaction
+
+##### Which region in the US has the highest life satisfaction? least?
+##### Which region spends the most time working? 
+##### Which region is the most social? Does this correspond with life satisfaction?
+
+### Health
+
+#### *Physical Activity*
+The data provided in this dataset includes individuals ranging from 15-85 years of age. Specifically, this section of analysis explored the 'Sports' time use variable, which highlights the amount of time an invididual spent on sports, exercise, and recreation in a day. This will be referenced as physical activity in the future.
+
+##### Which age range spends the most time engaging in physical activity?
+
+```{r}
+age <- time %>% 
+  mutate(agegroup = case_when(AGE >= 15  & AGE <= 19 ~ '15-19',
+                              AGE >= 20  & AGE <= 29 ~ '20-29',
+                              AGE >= 30  & AGE <= 39 ~ '30-39',
+                              AGE >= 40  & AGE <= 49 ~ '40-49',
+                              AGE >= 50  & AGE <= 59 ~ '50-59',
+                              AGE >= 60  & AGE <= 69 ~ '60-69',
+                              AGE >= 70  & AGE <= 79 ~ '70-79',
+                              AGE >= 80  & AGE <= 89 ~ '80-89',
+                              AGE >= 20  & AGE <= 29 ~ '20-29'))
+
+sportsByAge <- age %>%
+  group_by(agegroup) %>%
+  summarise(avg_time = mean(ACT_SPORTS))
+
+ggplot(sportsByAge, aes(x = agegroup, y = avg_time)) + geom_bar(stat = 'identity') + 
+  labs(x = "Age Group", y = "Average Active Time (min)", title = "Average Active Time  by Age Group")
+```
+
+The 15-19 year old group spends, on average, the greatest time doing sports, exercise and recreation - over double the amount of time compared to every other age group. Activity level tends to decline as age increases. 
+
+
+##### Does time spent engaging in physical activity vary by state?
+
+```{r}
+states <- map_data('state')
+state_codes <- read.table("https://raw.githubusercontent.com/tessamendoza/ds202_project/main/state_codes.csv", sep = ",", header = TRUE)
+
+state_codes <- state_codes %>%
+  mutate(STATE = tolower(STATE))
+
+sportsByState <- age %>%
+  group_by(STATEFIP) %>%
+  summarize(avgTime = mean(ACT_SPORTS)) %>%
+  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+
+stateMap <- states %>%
+  left_join(sportsByState, by = c('region' = 'STATE'))
+
+ggplot(stateMap %>% group_by(region), aes(x=long, y=lat, fill = avgTime)) + 
+  geom_polygon(aes(group=group)) + theme_map() + labs(title = "Average Active Time (min/day) by State")
+
+```
+
+The plot above utilized state data from the R package 'mapdata,' joined with a column of state names and codes (generated by the extract builder and found in the GitHub Repository). As shown in the map, physical activity does vary by state. In general, the northwest regions are among the most active, while states in the south (especially southeast) are less active. 
+. 
+```{r}
+mostActive5 <- sportsByState %>%
+  arrange(desc(avgTime)) %>%
+  head(5)
+mostActive5
+```
+
+The five most active states are Vermont, Montana, Hawaii, Wyoming, and Colorado  - each averaging between 25 and 30 active minutes per day.
+
+```{r}
+leastActive5 <- sportsByState %>%
+  arrange(avgTime) %>%
+  head(5)
+leastActive5
+```
+
+The least active states are Delaware, Alabama, Mississippi, South Carolina, and Louisiana - each averaging between 13 and 16 active minutes per day.
+
+#### Do activity levels among youth (individuals under 20) vary by state?
+
+```{r}
+youthByState <- age %>%
+  filter(AGE <= 20) %>%
+  group_by(STATEFIP) %>%
+  summarize(avgTime = mean(ACT_SPORTS)) %>%
+  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+
+youthStateMap <- states %>%
+  left_join(youthByState, by = c('region' = 'STATE'))
+
+ggplot(youthStateMap %>% group_by(region), aes(x=long, y=lat, fill = avgTime)) + 
+  geom_polygon(aes(group=group)) + theme_map() + labs(title = "Youth (under 20) Active Time (min/day) by State")
+```
+
+States in the midwest and northwest tend to have more active youth than states in the southwest and southeast regions. Vermont has the most active youth.
+
+
+#### *BMI*
+BMI, or Body Mass Index, is a measure of body fat based on height and weight that is commonly used in the healthcare setting. The BMI data was recorded in the ATUS survey series between 2006-2008 and 2014-2016. The BMI ranges (underweight, normal, overweight, and obese), are determined according to the Centers for Disease Control (CDC) standard. It is important to note that BMI is NOT the most accurate predictor of health status, however, it is a useful tool and provides a general marker for individual health, especially on a large-scale level. More information on BMI can be found on the CDC's website (see works cited section for link). 
+
+```{r}
+bmi <- age %>%
+  filter(YEAR == 2006 | YEAR == 2007 | YEAR == 2008 |
+           YEAR == 2014 | YEAR == 2015 | YEAR == 2016) %>%
+  filter(!is.na(BMI)) %>%
+  filter(BMI < 500)
+
+bmi$bmiStatus <- ifelse(bmi$BMI < 18.5, "underweight", 
+                        ifelse(bmi$BMI < 25, "normal",
+                        ifelse(bmi$BMI < 30, "overweight", 
+                               "obese")))
+
+ggplot(bmi, aes(x = BMI, fill = bmiStatus, color = bmiStatus)) + geom_histogram(position = 'identity', bins = 30, alpha = 0.5) + 
+  scale_fill_manual(values = c("#28C40C", "#DE2905", "#E8A201", "#8E9CA1")) +
+  scale_color_manual(values = c("#28C40C", "#DE2905", "#E8A201", "#8E9CA1")) + 
+  labs(y = "Number of Respondants", title = 'Distribution of BMI')
+
+```
+
+This plot shows the distribution of BMI's among individuals. BMI status was calculated using the CDC standard and was manually added to the dataset. The most frequent BMI values occur at the higher end of the normal range and at the lower end of the overweight category. 
+
+```{r}
+bmiByState <- bmi %>%
+  group_by(STATEFIP) %>%
+  summarize(avg_BMI = mean(BMI)) %>%
+  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+
+bmiStateMap <- states %>%
+  left_join(bmiByState, by = c('region' = 'STATE'))
+
+ggplot(bmiStateMap %>% group_by(region), aes(x=long, y=lat, fill = avg_BMI)) + 
+  geom_polygon(aes(group=group)) + theme_map() + labs(title = "Average Body Mass Index (BMI) by State") + scale_fill_viridis_c(option = "C")
+
+```
+This BMI map was made, using ggplot, by combining average BMI data for each state with an imported 'state' map (mentioned above). Colorado and Vermont have the healthiest individuals according to BMI, with the west coast, northeast, and Florida following closely behind. The midwest has a higher BMI and south regions have higher BMI, as does West Virginia.
+
+#### *General Health*
+
+One of the variables within the dataset contains self-reported general health status from the survey respnodents. The participants were asked to rate their general health as "Excellent," "Very good," "Good," "Fair," or "Poor." Some participants did refuse to answer and others responded "Don't know."
+
+```{r}
+health <- bmi %>%
+  filter(!is.na(GENHEALTH)) %>%
+  filter(GENHEALTH != 99)
+health$GENHEALTH <- factor(health$GENHEALTH, levels = c(1, 2, 3, 4, 5, 96, 97), 
+                     labels = c("Excellent", "Very good", "Good", "Fair", "Poor", "Refused", "Don't know"))
+
+ggplot(health, aes(x = GENHEALTH)) + geom_bar() + labs(x = "General Health", y = "Number of Respondents", title = 'Distribution of Self-Reported General Health Status')
+
+```
+
+The general distribution is as shown above: A majority of respondents consider themselves in 'very good' or 'good' health. Interestingly, this slightly contradicts the BMI, objective measurement of health, where a larger majority of individuals are categorized as 'overweight.'
+
+##### How does an individual's health (BMI and general health) relate to the amount of time they spend being physically active? 
+
+```{r}
+bmiStatus <- bmi %>%
+  mutate(bmiStatus = fct_relevel(bmiStatus, 
+                            "underweight", "normal", "overweight", "obese")) %>%
+  group_by(bmiStatus) %>%
+  summarise(avg_active = mean(ACT_SPORTS))
+
+ggplot(bmiStatus, aes(x = bmiStatus, y = avg_active)) + geom_bar(stat = 'identity') + labs(x = "BMI", y = "Average Active Time (min/day)", title = 'Activity Levels by BMI Range')
+
+```
+
+
+```{r}
+healthTable <- health %>%
+  group_by(GENHEALTH) %>%
+  summarise(avg_time = mean(ACT_SPORTS))
+ggplot(healthTable, aes(x = GENHEALTH, y = avg_time)) + geom_bar(stat = 'identity') + labs(x = "General Health", y = "Average Active Time (min/day)", title = 'Average Active Time by General Health Rating')
+
+```
+
+Here, there is a general positive correlation between an individual's amount of activity time and their perceived health level. That is, those who consider themselves in good health tend to be more active. Is there a causal relationship? Do active individuals end up more healthy? Or are healthy individuals more able to complete physical activity? 
+
+
+### Work-Life Balance
+
+##### How does an individual's work time correspond to their income? travel time?
+##### Do parents with children at home travel more or less than individuals with no children at home? 
+
+## Conclusion
+
+## Personal Contributions
+
+##### Tessa Mendoza
+I contributed to this project by exploring possible datasets, finding the time use dataset, and extracting the dataset according to the group's data exploration interests. I also created and organized the initial structure of the proposal and report documents, and wrote the overview and information for the proposal. In addition, I completed the analysis for the Health section of the report. My individual code can be found as .Rmd and .html files on GitHub (*individual_data_tessa.Rmd*).
+
+##### Jaeyeon Won
+
+##### Becca Barrick
+
+##### Jay Maxwell
+
+##### Alec Meyer
+
+## Works Cited
+For more information on BMI:https://www.cdc.gov/obesity/adult/defining.html.
+
