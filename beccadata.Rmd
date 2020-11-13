@@ -36,7 +36,7 @@ time %>%
 ```
 
 
-The amount of time people spend participating in religious activities has remained stable since 2004. Every year, the majority is just below 500 hours per year with a few outliers that spend much larger amounts of time, even going to 1000 hours per year. Numbers have been relatively lower since 2013. 
+The amount of time people spend participating in religious activities has remained stable since 2004. Every year, the majority is just below 500 minutes per day with a few outliers that spend much larger amounts of time, even going to 1000 minutes per day. Numbers have been relatively lower since 2013. 
 
 
 2) Are Americans working more or less than they used to? 
@@ -56,7 +56,7 @@ ggplot(time, mapping = aes(x = YEAR, y = ACT_WORK, color=SEX)) + geom_point()+
 ```
 
 
-The time spent working has also remained pretty stable since 2004. Most people spend at least 1000 minutes a day at work and many people spend up to 1500 a year working. I did some math and realized that 1000 minutes a day equates to over 16.5 hours a day. This data set considers "work" to be physically at work, completing any work activities like going to lunch or playing golf with a client, doing anything that makes you money, applying for jobs or interviewing, and many other activities. Obviously not everyone works every single day for that long due to holidays, appointments, and vacations, but 16.5 hours a day is a baseline for lots of people in America. There is a slight dip in minutes worked in 2013, 2016, and 2018. There are many people spending zero minutes working per day which could be because of unemployed adults or children, as this data set includes people as young as 15.
+The time spent working has also remained pretty stable since 2004. Most people spend at least 1000 minutes a day at work and many people spend up to 1500 minutes a day working. I did some math and realized that 1000 minutes a day equates to over 16.5 hours a day. This data set considers "work" to be activities physically at work, completing any work activities like going to lunch or playing golf with a client, doing anything that makes you money, applying for jobs or interviewing, and many other activities. Obviously not everyone works every single day for that long due to holidays, appointments, and vacations, but 16.5 hours a day is a baseline for lots of people in America. There is a slight dip in minutes worked in 2013, 2016, and 2018. There are many people spending zero minutes working per day which could be because of unemployed adults or children, as this data set includes people as young as 15.
 
 
 3) How has time spent working changed in various regions of the US?
