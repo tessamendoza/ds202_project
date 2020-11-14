@@ -220,7 +220,9 @@ time2 %>%
                  position=position_dodge(0.3), 
                  size=1.5) + 
   geom_point(aes(color=kids), position=position_dodge(0.3), size=3) + 
-  theme_pubclean()
+  theme_pubclean() +
+  ggtitle("Average minutes social by daily hours and child status") +
+  ylab("Mean minutes social per day") + xlab("Reported daily hours social")
 
 ```
 These plots are about time spent in social activities between those with and without children. The large number of outliers indicate to us that maybe another time block above four hours might be in order. In four of the catagories the mean time spent in social activity the mean minutes are roughly equal, but in the catagory of four or more hours per day there is a clear difference in the means between those with and those without children. We should probably not be surprised by this. 
@@ -245,22 +247,40 @@ This plot is not good. There are twoo many data points too closely packed togeth
 
 time2 %>%  ggplot(aes(x=ACT_WORK, y=ACT_TRAVEL, color = kids)) + 
   geom_smooth(method=lm) + 
-  ggtitle(label="Time work by time travel", subtitle="work includes 0") +
-  xlab("Minutes WORK") + ylab("Minutes TRAVEL")
+  ggtitle(label="Work minutes by Travel minutes") +
+  xlab("Daily Minutes WORK") + ylab("Daily Minutes TRAVEL") + coord_cartesian(ylim=c(40,100),xlim=c(0,1400))
 ```
-By using a regression line on our data, we might be able to better estimate how respondants use their time and look for signs of interaction or correlatoin between our variables. In this plot we see that respondans with children report about the same amount of travel time as time spent working increases. But for respondants with no children, there is a much steeper slope indicating that more time working might correlate to more time spent travelling. 
 
+By using a regression line on our data, we might be able to better estimate how respondants use their time and look for signs of interaction or correlatoin between our variables. In this plot we see that respondans with children report about the same amount of travel time as time spent working increases. But for respondants with no children, there is a  steeper slope indicating that more time working might correlate to more time spent travelling. 
+
+
+
+```{r}
+time2 %>%  ggplot(aes(x=ACT_WORK, y=ACT_RELIG, color = kids)) + 
+  geom_smooth(method=lm) + 
+  ggtitle(label="Work mintues by Religious minutes") +
+  xlab("Daily Minutes WORK") + ylab("Daily Minutes RELIG") + coord_cartesian(ylim=c(0,30),xlim=c(0,1400)) 
+
+```
 
 
 
 ```{r}
 time2 %>%  ggplot(aes(x=ACT_WORK, y=ACT_SOCIAL, color = kids)) + 
   geom_smooth(method=lm) + 
-  ggtitle(label="Minutes SOCIAL", subtitle="work includes 0") +
-  xlab("Minutes WOKR")
+  ggtitle(label="Work mintues by Social minutes") +
+  xlab("Daily Minutes WORK") + ylab("Daily Minutes SOCIAL") + coord_cartesian(ylim=c(0,400),xlim=c(0,1400))
 
 ```
+
 Among both respondants with children and those without, as minutes work increases, the amount of social time decreases.
+
+
+
+
+
+
+
 
 ```{r}
 # the variable time three only includes the data where the respondent
@@ -290,8 +310,9 @@ time2 %>%
   select(ACT_WORK, ACT_SOCIAL, ACT_TRAVEL, ACT_RELIG) %>% 
   cor() %>% 
   ggcorrplot(method="square", lab=TRUE) + 
-  ggtitle("correlation matrix - No Children")
+  ggtitle("Correlation matrix - No Children")
 ```
+
 We can use R to create a correlation matrix of our time-based variables. Among the no children group, there appears a moderate negative relation between work and social minutes, indicating that as minutes in work increase, minutes engaged in social time decrease. We should not be surprised at this based on the example charts from above. 
 
 
@@ -302,7 +323,8 @@ time2 %>%
   select(ACT_WORK, ACT_SOCIAL, ACT_TRAVEL, ACT_RELIG) %>% 
   cor() %>% 
   ggcorrplot(method="square", lab=TRUE) + 
-  ggtitle("correlation matrix - No Children")
+  ggtitle("Correlation matrix - Children")
 
 ```
+
 Removing children from the data set for our correlation only slightly lowers the strength of the possible correlatoins between our categories. Again, we should be be suprised at this conclusion based on the previous charts we examined. 
