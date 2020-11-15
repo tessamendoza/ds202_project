@@ -110,6 +110,11 @@ stateMap <- states %>%
 ggplot(stateMap %>% group_by(region), aes(x=long, y=lat, fill = avgWork)) + 
   geom_polygon(aes(group=group), color = "black") + theme_map() + labs(title = "Average Work by state") +
   scale_fill_gradient(low='white', high="#992222")
+
+#most social
+WorkByState[which.max(WorkByState$avgWork),]
+#least social
+WorkByState[which.min(WorkByState$avgWork),]
 ```
 
 <br />
@@ -132,4 +137,10 @@ ggplot(stateMap %>% group_by(region), aes(x=long, y=lat, fill = avgSoc)) +
   scale_fill_gradient(low='white', high="#992222")
 
 ggplot(time1, aes(fill = REGION, x = WBLADDER, y = ACT_SOCIAL)) + geom_bar(stat = "summary", fun.y = "mean", position = "dodge") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Social Activites by Region")
+
+#most social
+SocByState[which.max(SocByState$avgSoc),]
+#least social
+SocByState[which.min(SocByState$avgSoc),]
 ```
+
