@@ -152,6 +152,9 @@ breaks <- c(0,240,480,Inf)
 labels <-c("0-3.99 hours", "4-8 hours", "8+ hours")
 time2$work_time_bins <- cut(time2$ACT_WORK, breaks = breaks, labels = labels, right=FALSE)
 
+time2 %>% 
+  group_by(kids, work_time_bins) %>% 
+  summarize(n = n(), mean_work_minutes = mean(ACT_WORK))
 
 time2 %>% 
   group_by(kids, work_time_bins) %>% 
@@ -201,6 +204,11 @@ time2  %>%
 
 time2 %>% 
   group_by(kids, travel_time_bins) %>% 
+  summarize(n = n(), mean_travel_minutes = mean(ACT_TRAVEL))
+
+
+time2 %>% 
+  group_by(kids, travel_time_bins) %>% 
   summarize(n = n(), mean_travel_minutes = mean(ACT_TRAVEL)) %>%
   ggplot(aes(x=travel_time_bins, y=mean_travel_minutes)) + 
   geom_linerange(aes(x=travel_time_bins, ymin=0, ymax=mean_travel_minutes, group=kids), 
@@ -232,4 +240,62 @@ breaks <- c(0,30,60,90,Inf)
 labels <-c("0-29 minutes", "30-59 minutes", "60-89 minutes", "90+ minutes")
 time2$relig_time_bins <- cut(time2$ACT_RELIG, breaks = breaks, labels = labels, right=FALSE)
 
+time2  %>%
+  ggplot(aes(x=relig_time_bins, y=ACT_RELIG)) + geom_boxplot(aes(color=kids)) + ggtitle(label="Boxplot of minutes religious daily by child status", subtitle="subtitle") + xlab('Binned times') + ylab('Minutes religious')
 
+
+time2 %>% 
+  group_by(kids, relig_time_bins) %>% 
+  summarize(n = n(), mean_relig_minutes = mean(ACT_RELIG))
+
+
+time2 %>% 
+  group_by(kids, relig_time_bins) %>% 
+  summarize(n = n(), mean_relig_minutes = mean(ACT_RELIG)) %>%
+  ggplot(aes(x=relig_time_bins, y=mean_relig_minutes)) + 
+  geom_linerange(aes(x=relig_time_bins, ymin=0, ymax=mean_relig_minutes, group=kids), 
+                 color="lightgray", 
+                 position=position_dodge(0.3), 
+                 size=1.5) + 
+  geom_point(aes(color=kids), position=position_dodge(0.3), size=3) + 
+  theme_pubclean() + 
+  ggtitle("Average minutes religious by daily hours and child status") + 
+  ylab("Mean minutes religious per day") + xlab("Reported daily hours religious")
+
+
+
+## and finally, ACT_SOCIAL with KIDS
+
+
+
+summary(time2$ACT_SOCIAL)
+range(time2$ACT_SOCIAL)
+quantile(time2$ACT_SOCIAL)
+IQR(time2$ACT_SOCIAL)
+sd(time2$ACT_SOCIAL)
+mean(time2$ACT_SOCIAL)
+
+
+breaks <- c(0,60,120,180,240,Inf)
+labels <-c("0-59 minutes", "60-119 minutes", "120-179 minutes", "180-239 minutes"," 240+")
+time2$social_time_bins <- cut(time2$ACT_SOCIAL, breaks = breaks, labels = labels, right=FALSE)
+
+time2  %>%
+  ggplot(aes(x=social_time_bins, y=ACT_SOCIAL)) + geom_boxplot(aes(color=kids))
+
+time2 %>% 
+  group_by(kids, social_time_bins) %>% 
+  summarize(n = n(), mean_social_minutes = mean(ACT_SOCIAL))
+
+time2 %>% 
+  group_by(kids, social_time_bins) %>% 
+  summarize(n = n(), mean_social_minutes = mean(ACT_SOCIAL)) %>%
+  ggplot(aes(x=social_time_bins, y=mean_social_minutes)) + 
+  geom_linerange(aes(x=social_time_bins, ymin=0, ymax=mean_social_minutes, group=kids), 
+                 color="lightgray", 
+                 position=position_dodge(0.3), 
+                 size=1.5) + 
+  geom_point(aes(color=kids), position=position_dodge(0.3), size=3) + 
+  theme_pubclean()
+
+range(time2$YEAR)
