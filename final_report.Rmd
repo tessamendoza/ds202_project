@@ -1,66 +1,142 @@
----
-title: "The Clock is Ticking: How Do Americans Spend Their Time?"
-output: html_document
----
 
-#### Team Members: 
-Jaeyeon Won (Project Coordinator), Becca Barrick, Jay Maxwell, Alec Meyer, and Tessa Mendoza
+## **The Clock is Ticking: How Do Americans Spend Their Time?** 
+#### Authors: Jaeyeon Won (Project Coordinator), Becca Barrick, Jay Maxwell, Alec Meyer, and Tessa Mendoza
 
 
-## Overview
-This project aims to look at how Americans spend their time. The dataset used in this project, *time.cvs*, comes from *IPUMS Time Use*, a collaborative research effort that provides demographic, socioeconomic, household, and daily time use data from survey respondents.
+## Introduction
+some background information & goal (purpose) here.
+This project aims to look at how Americans spend their time. 
+![People in New York](https://offloadmedia.feverup.com/secretnyc.co/wp-content/uploads/2019/01/10132249/people-1024x597.jpg)
 
+<hr>
 
-## Dataset
-The dataset was extracted from the *American Time Use Survey (ATUS)* (https://timeuse.ipums.org/), which provides U.S. time diary survey data for period since 2003, using the ATUS extract builder. The dataset *time.cvs* can be found at https://github.com/tessamendoza/ds202_project.git. 
+## Research Questions
+To achieve our goal, we have developed five general areas of exploration with the following five research questions: 
 
+- What are the overall time usage patterns for different demographics?
+- How did the trend of time usage change over the last 15 years? 
+- How are individual's perceived life satisfaction and time usage related?
+- How are individual's general health status and time usage related? 
+- What factors are related to individual's work and travel time? 
+
+<hr>
+
+## Overview of the Dataset
+This section describes how we obtained and cleaned the dataset for this project.
+
+#### Obtaining the Dataset
+The dataset *time.cvs* comes from the *IPUMS Time Use*, a collaborative research data portal that provides demographic, socioeconomic, household, and daily time use data from survey respondents. Specifically, the dataset was extracted from the *American Time Use Survey (ATUS)* (https://timeuse.ipums.org/), which provides U.S. time diary survey data for period since 2003, using the ATUS extract builder.
+
+The extracted dataset contains 39 variables for approximately 189,866 observations collected from 2004 to 2019. 7 of them are time use variables that were used as response variables, and the other 32 are additional variables that were used to investigate the associations to the time use variables. 
 
 #### Cleaning the Datset
-The data cleaning process was made relatively simple by the ATUS extract builder, since we were able to export the dataset directly as a .csv file (allowing us to upload it to GitHub for collaborative use). Using the extract builder, we chose the variables most important to our exploration, therefore eliminating unnecessary columns. This left us with 6 time use variables and 33 additional variables. Our extracted dataset contains approximately 189,866 observations collected from 2004 to 2019. The categorical variables in the dataset are encoded as numerical values, and the codes provided by the ATUS extract builder can be found in a .txt file (codes.txt) in our GitHub Repository.
+The data cleaning process was made relatively simple by the ATUS extract builder, since we were able to export the dataset only with the necessary variables directly as a csv file. The categorical variables in the extracted dataset were encoded as numerical values. To clean this, we renamed the levels with appropriate names based on the codebook provided by the ATUS extract builder. 
 
+Our dataset and the codebook can be found at https://github.com/tessamendoza/ds202_project.git.
+
+<hr>
 
 ## Exploratory Analysis
 
-```{r, echo = FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
 library(ggthemes)
 ```
 
-```{r}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results=FALSE}
 time <- read.csv("https://raw.githubusercontent.com/tessamendoza/ds202_project/main/time.csv")
+statecode = read.csv("https://raw.githubusercontent.com/tessamendoza/ds202_project/main/state_codes.csv")
 ```
 
-```{r}
-# My thought is that the set of questions above (Jaeyeon's questions) could be used as our summary infographics, as they give an overview of the data and its distribution.. So, any visuals for different age groups, gender, races, and regions could be shown as a highlight (probably wouldn't need to list the questions) and the rest of our questions could be included below. This is similar to how the example groups presented their data. 
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results=FALSE}
+# clean data
+time_jaeyeon = time %>%
+  select(REGION, STATEFIP, AGE, SEX, RACE, starts_with('ACT_'))
 ```
 
-## Purpose and Questions
-The ultimate goal of this project is to better understand how individuals in America have spent their time over the last 16 years (from 2004 to 2019). To achieve this, we have developed five general areas of exploration with the following five research questions: 
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results=FALSE}
+# Independent variables
 
-- How did the trend of time usage over the last 15 years change? 
-- How do demographics and living location affect time usage? 
-- How are the way an individual spends their time and their perceived life satisfaction related?
-- How are individual's time usage and their general health status related? 
-- What factors affect individual's work and travel time? 
+# SEX
+# Convert type
+time_jaeyeon$SEX = as.factor(time_jaeyeon$SEX)
+# Rename the levels
+levels(time_jaeyeon$SEX) =  c("Male", "Female")
+# Check new levels
+levels(time_jaeyeon$SEX)
 
-### Time Use over Time
+# RACE
+# Include only non-mixed races
+time_jaeyeon = time_jaeyeon %>%
+  filter(RACE %in% c(100, 110, 120, 131, 132))
+# Convert type
+time_jaeyeon$RACE = as.factor(time_jaeyeon$RACE)
+# Rename the levels
+levels(time_jaeyeon$RACE) =  c("White only", "Black only", "American Indian, Alaskan Native", "Asian only", "Hawaiian Pacific Islander only")
+# Check new levels
+levels(time_jaeyeon$RACE)
+
+# REGION
+# Convert type
+time_jaeyeon$REGION = as.factor(time_jaeyeon$REGION)
+# Rename the levels
+levels(time_jaeyeon$REGION) =  c("Northeast", "Midwest", "South", "West")
+# Check new levels
+levels(time_jaeyeon$REGION)
+
+# STATEFIP
+# Join
+time_jaeyeon = time_jaeyeon %>%
+  left_join(statecode, by = "STATEFIP" )
+# Convert type
+time_jaeyeon$STATE = as.factor(time_jaeyeon$STATE)
+# Check new levels
+levels(time_jaeyeon$STATE)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results=FALSE}
+# Dependent variables
+
+# Pivot_longer
+time_jaeyeon_longer = time_jaeyeon %>%
+  pivot_longer(starts_with('ACT_'), names_to = 'TIME_ACTIVITY', values_to = 'TIME_SPENT')
+# Convert type
+time_jaeyeon_longer$TIME_ACTIVITY = as.factor(time_jaeyeon_longer$TIME_ACTIVITY)
+# Rename the levels
+levels(time_jaeyeon_longer$TIME_ACTIVITY) =  c("Eating & Drinking", 
+                                "Personal Care", 
+                                "Religious & Spiritual Activities", 
+                                "Socializing, Relaxing & Leisure", 
+                                "Sports, Exercise & Recreation", 
+                                "Traveling", 
+                                "Work & Work-Related Activities")
+# Check new levels
+levels(time_jaeyeon_longer$TIME_ACTIVITY)
+```
+
+<hr>
+
+## Time Usage Over Time
 
 ##### Has time spent engaged in religious and spiritual activities changed over the last 15 years?
+##### Are Americans working more or less than they used to?
 
-##### Are Americans working more or less than they used to? 
+<hr>
 
-### Life Satisfaction
+## Life Satisfaction & Time Usage
 
 ##### Which region in the US has the highest life satisfaction? least?
 ##### Which region spends the most time working? 
 ##### Which region is the most social? Does this correspond with life satisfaction?
 
-### Health
+<hr>
+
+## Health & Time Usage
 
 #### *Physical Activity*
-The data provided in this dataset includes individuals ranging from 15-85 years of age. Specifically, this section of analysis explored the 'Sports' time use variable, which highlights the amount of time an invididual spent on sports, exercise, and recreation in a day. This will be referenced as physical activity in the future.
+The data provided in this dataset includes individuals ranging from 15-85 years of age. Specifically, this section of analysis explored the 'Sports' time use variable, which highlights the amount of time an individual spent on sports, exercise, and recreation in a day. This will be referenced as physical activity in the future.
 
 ##### Which age range spends the most time engaging in physical activity?
 
@@ -91,15 +167,14 @@ The 15-19 year old group spends, on average, the greatest time doing sports, exe
 
 ```{r}
 states <- map_data('state')
-state_codes <- read.table("https://raw.githubusercontent.com/tessamendoza/ds202_project/main/state_codes.csv", sep = ",", header = TRUE)
 
-state_codes <- state_codes %>%
+statecode <- statecode %>%
   mutate(STATE = tolower(STATE))
 
 sportsByState <- age %>%
   group_by(STATEFIP) %>%
   summarize(avgTime = mean(ACT_SPORTS)) %>%
-  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+  left_join(statecode, by = c("STATEFIP" = 'STATEFIP'))
 
 stateMap <- states %>%
   left_join(sportsByState, by = c('region' = 'STATE'))
@@ -136,7 +211,7 @@ youthByState <- age %>%
   filter(AGE <= 20) %>%
   group_by(STATEFIP) %>%
   summarize(avgTime = mean(ACT_SPORTS)) %>%
-  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+  left_join(statecode, by = c("STATEFIP" = 'STATEFIP'))
 
 youthStateMap <- states %>%
   left_join(youthByState, by = c('region' = 'STATE'))
@@ -176,7 +251,7 @@ This plot shows the distribution of BMI's among individuals. BMI status was calc
 bmiByState <- bmi %>%
   group_by(STATEFIP) %>%
   summarize(avg_BMI = mean(BMI)) %>%
-  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+  left_join(statecode, by = c("STATEFIP" = 'STATEFIP'))
 
 bmiStateMap <- states %>%
   left_join(bmiByState, by = c('region' = 'STATE'))
@@ -228,27 +303,35 @@ ggplot(healthTable, aes(x = GENHEALTH, y = avg_time)) + geom_bar(stat = 'identit
 
 Here, there is a general positive correlation between an individual's amount of activity time and their perceived health level. That is, those who consider themselves in good health tend to be more active. Is there a causal relationship? Do active individuals end up more healthy? Or are healthy individuals more able to complete physical activity? 
 
+<hr>
 
-### Work-Life Balance
+## Work-Life Balance
 
 ##### How does an individual's work time correspond to their income? travel time?
 ##### Do parents with children at home travel more or less than individuals with no children at home? 
 
+<hr>
+
 ## Conclusion
+
+<hr>
 
 ## Personal Contributions
 
-##### Tessa Mendoza
+#### Tessa Mendoza
 I contributed to this project by exploring possible datasets, finding the time use dataset, and extracting the dataset according to the group's data exploration interests. I also created and organized the initial structure of the proposal and report documents, and wrote the overview and information for the proposal. In addition, I completed the analysis for the Health section of the report. My individual code can be found as .Rmd and .html files on GitHub (*individual_data_tessa.Rmd*).
 
-##### Jaeyeon Won
+#### Jaeyeon Won
 
-##### Becca Barrick
+#### Becca Barrick
 
-##### Jay Maxwell
+#### Jay Maxwell
 
-##### Alec Meyer
+#### Alec Meyer
+
+<hr>
 
 ## Works Cited
 For more information on BMI:https://www.cdc.gov/obesity/adult/defining.html.
 
+Reference for the picture - https://secretnyc.co/new-york-among-states-highest-population-loss-country-study-shows/
