@@ -1,0 +1,707 @@
+---
+title: "DS202 Project"
+author: "Jaeyeon Won"
+date: "11/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<hr>
+
+# Load Libraries
+
+```{r, message = FALSE, warning = FALSE}
+library(ggplot2)
+library(tidyverse)
+library(ggthemes)
+library(plotly)
+library(ggrepel)
+```
+
+<hr>
+
+# Load Data
+
+```{r, message = FALSE, warning = FALSE}
+time = read.csv("time.csv")
+```
+
+<hr>
+
+# Clean Data
+```{r, message = FALSE, warning = FALSE}
+time_jaeyeon = time %>%
+  select(REGION, STATEFIP, AGE, SEX, RACE, starts_with('ACT_'))
+```
+
+## Explanatory Variables
+```{r, message = FALSE, warning = FALSE}
+# Variables: AGE, SEX, RACE, REGION, STATEFIP
+
+# AGE
+# Doesn't need cleaning
+# Check observations
+head(time_jaeyeon$AGE)
+
+# SEX
+# Convert type
+time_jaeyeon$SEX = as.factor(time_jaeyeon$SEX)
+# Rename the levels
+levels(time_jaeyeon$SEX) =  c("Male", "Female")
+# Check new levels
+levels(time_jaeyeon$SEX)
+
+# RACE
+# Include only non-mixed races
+time_jaeyeon = time_jaeyeon %>%
+  filter(RACE %in% c(100, 110, 120, 131, 132))
+# Convert type
+time_jaeyeon$RACE = as.factor(time_jaeyeon$RACE)
+# Rename the levels
+levels(time_jaeyeon$RACE) =  c("White only", "Black only", "American Indian, Alaskan Native", "Asian only", "Hawaiian Pacific Islander only")
+# Check new levels
+levels(time_jaeyeon$RACE)
+
+# REGION
+# Convert type
+time_jaeyeon$REGION = as.factor(time_jaeyeon$REGION)
+# Rename the levels
+levels(time_jaeyeon$REGION) =  c("Northeast", "Midwest", "South", "West")
+# Check new levels
+levels(time_jaeyeon$REGION)
+
+# STATEFIP
+# Load state_codes
+statecode = read.csv("https://raw.githubusercontent.com/tessamendoza/ds202_project/main/state_codes.csv")
+# Join
+time_jaeyeon = time_jaeyeon %>%
+  left_join(statecode, by = "STATEFIP" )
+# Convert type
+time_jaeyeon$STATE = as.factor(time_jaeyeon$STATE)
+# Check new levels
+levels(time_jaeyeon$STATE)
+```
+
+## Response Variables
+```{r, message = FALSE, warning = FALSE}
+# Variables: ACT_FOOD, ACT_PCARE, ACT_RELIG, ACT_SOCIAL, ACT_SPORTS, ACT_TRAVEL, ACT_WORK
+
+# Pivot_longer
+time_jaeyeon_longer = time_jaeyeon %>%
+  pivot_longer(starts_with('ACT_'), names_to = 'TIME_ACTIVITY', values_to = 'TIME_SPENT')
+# Convert type
+time_jaeyeon_longer$TIME_ACTIVITY = as.factor(time_jaeyeon_longer$TIME_ACTIVITY)
+# Rename the levels
+levels(time_jaeyeon_longer$TIME_ACTIVITY) =  c("Eating & Drinking", 
+                                "Personal Care", 
+                                "Religious & Spiritual Activities", 
+                                "Socializing, Relaxing, & Leisure", 
+                                "Sports, Exercise, & Recreation", 
+                                "Traveling", 
+                                "Work & Work-Related Activities")
+# Check new levels
+levels(time_jaeyeon_longer$TIME_ACTIVITY)
+```
+
+<hr>
+
+# Questions
+## - How do demographics and living location affect time usage?
+1) How does time usage differ for different age groups?
+```{r, message = FALSE, warning = FALSE}
+# Age Group
+time_jaeyeon_longer = time_jaeyeon_longer %>%
+  mutate(age_group = case_when(AGE >= 15  & AGE <= 19 ~ '15-19',
+                              AGE >= 20  & AGE <= 29 ~ '20-29',
+                              AGE >= 30  & AGE <= 39 ~ '30-39',
+                              AGE >= 40  & AGE <= 49 ~ '40-49',
+                              AGE >= 50  & AGE <= 59 ~ '50-59',
+                              AGE >= 60  & AGE <= 69 ~ '60-69',
+                              AGE >= 70  & AGE <= 79 ~ '70-79',
+                              AGE >= 80  & AGE <= 89 ~ '80-89',
+                              AGE >= 20  & AGE <= 29 ~ '20-29'))
+
+# Proportional Barplot
+time_jaeyeon_longer %>%
+  group_by(age_group, TIME_ACTIVITY) %>%
+  summarise(avg_time = mean(TIME_SPENT)) %>%
+  ggplot(aes(x = age_group, weight = avg_time, fill = TIME_ACTIVITY)) + 
+  geom_bar(position = 'fill') +
+  ggtitle('Proportional Barplot of Time Usage by Age Group') +
+  xlab('Activity') +
+  ylab('Average Time Spent per Day (in minutes)') +
+  labs(fill = 'Activity')
+```
+
+<hr>
+
+2) How does time usage differ between females and males?
+```{r, message = FALSE, warning = FALSE}
+# Side by Side Barplot
+time_jaeyeon_longer %>%
+  group_by(TIME_ACTIVITY, SEX) %>%
+  summarise(avg_time = mean(TIME_SPENT)) %>%
+  ggplot(aes(x = reorder(TIME_ACTIVITY, avg_time), weight = avg_time, fill = SEX)) + 
+  geom_bar(position = 'dodge') +
+  coord_flip() +
+  ggtitle('Barplot of Time Usage by Gender') +
+  xlab('Activity') +
+  ylab('Average Time Spent per Day (in minutes)') +
+  labs(fill = 'Gender')
+
+# Proportional Barplot
+time_jaeyeon_longer %>%
+  group_by(TIME_ACTIVITY, SEX) %>%
+  summarise(avg_time = mean(TIME_SPENT)) %>%
+  ggplot(aes(x = SEX, weight = avg_time, fill = TIME_ACTIVITY)) + 
+  geom_bar(position = 'fill') +
+  ggtitle('Barplot of Time Usage by Gender') +
+  xlab('Gender') +
+  ylab('Average Time Spent per Day (in minutes)') +
+  labs(fill = 'Activity')
+```
+
+<hr>
+
+3) How does time usage differ for different races?
+```{r, message = FALSE, warning = FALSE}
+# Proportional Barplot
+time_jaeyeon_longer %>%
+  group_by(TIME_ACTIVITY, RACE) %>%
+  summarise(avg_time = mean(TIME_SPENT)) %>%
+  ggplot(aes(x = reorder(RACE, avg_time), weight = avg_time, fill = TIME_ACTIVITY)) + 
+  geom_bar(position = 'fill') +
+  coord_flip() +
+  ggtitle('Barplot of Time Usage by Race') +
+  xlab('Race') +
+  ylab('Average Time Spent per Day (in minutes)') +
+  labs(fill = 'Activity')
+```
+
+
+<hr>
+
+4) How are the region (Northeast, Midwest, South, West) and individual's time distribution related?
+```{r, message = FALSE, warning = FALSE}
+# Load map_data
+states = map_data('state')
+
+# time_region for map
+time_region = time_jaeyeon_longer %>%
+  group_by(REGION, STATE, TIME_ACTIVITY) %>%
+  summarise(avg_time = mean(TIME_SPENT)) %>%
+  mutate(STATE = tolower(STATE)) %>%
+  left_join(states %>%
+              select(-subregion), 
+            by = c('STATE' = 'region'))
+
+# time_region_text for map
+time_region_text = time_jaeyeon_longer %>%
+  group_by(REGION, TIME_ACTIVITY) %>%
+  summarise(avg_time = mean(TIME_SPENT))
+
+# Map
+time_region %>%
+  ggplot(aes(x = long, y = lat, fill = REGION)) +
+  geom_polygon(aes(group = group)) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_map() +
+  annotate(geom = "text", x = -75, y = 42.5, label = "Northeast", size = 4.5, fontface = "bold") +
+  annotate(geom = "text", x = -95, y = 42.5, label = "Midwest", size = 5, fontface = "bold") +
+  annotate(geom = "text", x = -90, y = 33.7, label = "South", size = 5, fontface = "bold") +
+  annotate(geom = "text", x = -113.5, y = 41, label = "West", size = 5, fontface = "bold") +
+  annotate("label", x = -53, y = 43, size = 3,
+           label = "NORTHEAST \nEating & Drinking: 70.19 \nPersonal Care: 568.13 \nReligious Activities: 10.39 \nRelaxing & Leisure: 300.83 \nSports & Exercise: 19.40 \nTraveling: 74.21 \nWork Activities: 155.67") +
+  annotate("label", x = -92, y = 55, size = 3,
+           label = "MIDWEST \nEating & Drinking: 66.72 / Personal Care: 569.14 \nReligious Activities: 10.98 / Relaxing & Leisure: 299.32 \nSports & Exercise: 20.13 / Traveling: 69.28 \nWork Activities: 163.97") +
+  annotate("label", x = -68, y = 28.8, size = 3,
+           label = "SOUTH \nEating & Drinking: 64.15 \nPersonal Care: 583.75 \nReligious Activities: 16.26 \nRelaxing & Leisure: 302.88 \nSports & Exercise: 17.45 \nTraveling: 70.56 \nWork Activities: 155.97") +
+  annotate("label", x = -134, y = 42, size = 3,
+           label = "WEST \nEating & Drinking: 71.01 \nPersonal Care: 578.03 \nReligious Activities: 10.89 \nRelaxing & Leisure: 279.29 \nSports & Exercise: 22.41 \nTraveling: 72.58 \nWork Activities: 159.20") +
+  labs(title = 'Map of the U.S. Regions with Average Time Spent on Each Activity Per Day (in minutes)',
+#       caption = 'Figure 1: Map of Average Time Spent by Region',
+       fill = 'Region')
+#  theme(plot.caption = element_text(hjust = 0.5))
+```
+
+<hr>
+
+5) How does time usage differ for each state? 
+```{r, message = FALSE, warning = FALSE}
+# time_state for map
+time_state = time_jaeyeon_longer %>%
+  group_by(STATE, TIME_ACTIVITY) %>%
+  summarise(avg_time = mean(TIME_SPENT)) %>%
+  mutate(STATE = tolower(STATE)) %>%
+  left_join(states %>%
+              select(-subregion), 
+            by = c('STATE' = 'region'))
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+# Eating & Drinking
+time_state %>%
+  filter(TIME_ACTIVITY == 'Eating & Drinking') %>%
+  ggplot(aes(x = long, y = lat, fill = avg_time)) +
+  geom_polygon(aes(group = group)) +
+  geom_path(aes(group = group), color = 'black') +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_map() +
+  labs(title = 'Average Time Spent on Eating & Drinking Per Day (in minutes)',
+       fill = 'Average Time \n(in minutes)') +
+   theme(legend.position = c(0.85, 0.2),
+         legend.background = element_rect(linetype = "solid", colour ="black"),
+         plot.title = element_text(hjust = 0.5, face = "bold")) +
+  scale_fill_gradient(low = "white", high = "red2") +
+  annotate(geom = "text", x = -120, y = 47.5, label = "WA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -120.5, y = 44, label = "OR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -119.8, y = 37, label = "CA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -114.5, y = 43.8, label = "ID", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -116.8, y = 39.6, label = "NV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 39.4, label = "UT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 34.5, label = "AZ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -109, y = 47, label = "MT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -107.5, y = 43, label = "WY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -105.5, y = 39, label = "CO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -106, y = 34.5, label = "NM", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.7, y = 47.5, label = "ND", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.5, y = 44.5, label = "SD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100, y = 41.5, label = "NE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -98.8, y = 38.5, label = "KS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -96.5, y = 35.5, label = "OK", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -99.5, y = 31.5, label = "TX", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -94.5, y = 46, label = "MN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -93.3, y = 42.2, label = "IA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 38.5, label = "MO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 35, label = "AR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.6, y = 31.3, label = "LA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -90, y = 45, label = "WI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89, y = 40, label = "IL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89.5, y = 33, label = "MS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.8, y = 43.5, label = "MI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86, y = 40, label = "IN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.5, y = 37.7, label = "KY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.3, y = 35.8, label = "TN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.7, y = 33, label = "AL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -82.7, y = 40.3, label = "OH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -83.3, y = 32.8, label = "GA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -81.5, y = 28.5, label = "FL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -77.8, y = 40.9, label = "PA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 38.5, label = "WV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -78.5, y = 37.5, label = "VA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -79.5, y = 35.7, label = "NC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 34, label = "SC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -75, y = 43, label = "NY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -69, y = 45.5, label = "ME", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74.5, y = 36.5, label = "DC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74, y = 37.5, label = "MD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73.8, y = 38.5, label = "DE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73, y = 39.5, label = "NJ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72, y = 40.2, label = "CT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -70.5, y = 40.7, label = "RI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.5, y = 42, label = "MA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.8, y = 43.2, label = "NH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
+
+```
+
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+# Personal Care
+time_state %>%
+  filter(TIME_ACTIVITY == 'Personal Care') %>%
+  ggplot(aes(x = long, y = lat, fill = avg_time)) +
+  geom_polygon(aes(group = group)) +
+  geom_path(aes(group = group), color = 'black') +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_map() +
+  labs(title = 'Average Time Spent on Personal Care Per Day (in minutes)',
+       fill = 'Average Time \n(in minutes)') +
+   theme(legend.position = c(0.85, 0.2),
+         legend.background = element_rect(linetype = "solid", colour ="black"),
+         plot.title = element_text(hjust = 0.5, face = "bold")) +
+  scale_fill_gradient(low = "white", high = "deepskyblue4") +
+  annotate(geom = "text", x = -120, y = 47.5, label = "WA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -120.5, y = 44, label = "OR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -119.8, y = 37, label = "CA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -114.5, y = 43.8, label = "ID", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -116.8, y = 39.6, label = "NV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 39.4, label = "UT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 34.5, label = "AZ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -109, y = 47, label = "MT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -107.5, y = 43, label = "WY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -105.5, y = 39, label = "CO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -106, y = 34.5, label = "NM", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.7, y = 47.5, label = "ND", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.5, y = 44.5, label = "SD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100, y = 41.5, label = "NE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -98.8, y = 38.5, label = "KS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -96.5, y = 35.5, label = "OK", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -99.5, y = 31.5, label = "TX", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -94.5, y = 46, label = "MN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -93.3, y = 42.2, label = "IA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 38.5, label = "MO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 35, label = "AR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.6, y = 31.3, label = "LA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -90, y = 45, label = "WI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89, y = 40, label = "IL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89.5, y = 33, label = "MS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.8, y = 43.5, label = "MI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86, y = 40, label = "IN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.5, y = 37.7, label = "KY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.3, y = 35.8, label = "TN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.7, y = 33, label = "AL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -82.7, y = 40.3, label = "OH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -83.3, y = 32.8, label = "GA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -81.5, y = 28.5, label = "FL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -77.8, y = 40.9, label = "PA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 38.5, label = "WV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -78.5, y = 37.5, label = "VA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -79.5, y = 35.7, label = "NC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 34, label = "SC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -75, y = 43, label = "NY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -69, y = 45.5, label = "ME", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74.5, y = 36.5, label = "DC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74, y = 37.5, label = "MD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73.8, y = 38.5, label = "DE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73, y = 39.5, label = "NJ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72, y = 40.2, label = "CT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -70.5, y = 40.7, label = "RI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.5, y = 42, label = "MA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.8, y = 43.2, label = "NH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+# Religious & Spiritual Activities
+time_state %>%
+  filter(TIME_ACTIVITY == 'Religious & Spiritual Activities') %>%
+  ggplot(aes(x = long, y = lat, fill = avg_time)) +
+  geom_polygon(aes(group = group)) +
+  geom_path(aes(group = group), color = 'black') +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_map() +
+  labs(title = 'Average Time Spent on Religious & Spiritual Activities Per Day (in minutes)',
+       fill = 'Average Time \n(in minutes)') +
+   theme(legend.position = c(0.85, 0.2),
+         legend.background = element_rect(linetype = "solid", colour ="black"),
+         plot.title = element_text(hjust = 0.5, face = "bold")) +
+  scale_fill_gradient(low = "white", high = "darkorange2") +
+  annotate(geom = "text", x = -120, y = 47.5, label = "WA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -120.5, y = 44, label = "OR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -119.8, y = 37, label = "CA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -114.5, y = 43.8, label = "ID", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -116.8, y = 39.6, label = "NV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 39.4, label = "UT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 34.5, label = "AZ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -109, y = 47, label = "MT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -107.5, y = 43, label = "WY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -105.5, y = 39, label = "CO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -106, y = 34.5, label = "NM", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.7, y = 47.5, label = "ND", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.5, y = 44.5, label = "SD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100, y = 41.5, label = "NE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -98.8, y = 38.5, label = "KS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -96.5, y = 35.5, label = "OK", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -99.5, y = 31.5, label = "TX", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -94.5, y = 46, label = "MN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -93.3, y = 42.2, label = "IA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 38.5, label = "MO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 35, label = "AR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.6, y = 31.3, label = "LA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -90, y = 45, label = "WI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89, y = 40, label = "IL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89.5, y = 33, label = "MS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.8, y = 43.5, label = "MI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86, y = 40, label = "IN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.5, y = 37.7, label = "KY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.3, y = 35.8, label = "TN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.7, y = 33, label = "AL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -82.7, y = 40.3, label = "OH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -83.3, y = 32.8, label = "GA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -81.5, y = 28.5, label = "FL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -77.8, y = 40.9, label = "PA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 38.5, label = "WV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -78.5, y = 37.5, label = "VA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -79.5, y = 35.7, label = "NC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 34, label = "SC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -75, y = 43, label = "NY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -69, y = 45.5, label = "ME", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74.5, y = 36.5, label = "DC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74, y = 37.5, label = "MD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73.8, y = 38.5, label = "DE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73, y = 39.5, label = "NJ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72, y = 40.2, label = "CT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -70.5, y = 40.7, label = "RI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.5, y = 42, label = "MA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.8, y = 43.2, label = "NH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+# Socializing, Relaxing, & Leisure
+time_state %>%
+  filter(TIME_ACTIVITY == 'Socializing, Relaxing, & Leisure') %>%
+  ggplot(aes(x = long, y = lat, fill = avg_time)) +
+  geom_polygon(aes(group = group)) +
+  geom_path(aes(group = group), color = 'black') +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_map() +
+  labs(title = 'Average Time Spent on Socializing, Relaxing, & Leisure Per Day (in minutes)',
+       fill = 'Average Time \n(in minutes)') +
+   theme(legend.position = c(0.85, 0.2),
+         legend.background = element_rect(linetype = "solid", colour ="black"),
+         plot.title = element_text(hjust = 0.5, face = "bold")) +
+  scale_fill_gradient(low = "white", high = "violetred3") +
+  annotate(geom = "text", x = -120, y = 47.5, label = "WA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -120.5, y = 44, label = "OR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -119.8, y = 37, label = "CA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -114.5, y = 43.8, label = "ID", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -116.8, y = 39.6, label = "NV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 39.4, label = "UT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 34.5, label = "AZ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -109, y = 47, label = "MT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -107.5, y = 43, label = "WY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -105.5, y = 39, label = "CO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -106, y = 34.5, label = "NM", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.7, y = 47.5, label = "ND", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.5, y = 44.5, label = "SD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100, y = 41.5, label = "NE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -98.8, y = 38.5, label = "KS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -96.5, y = 35.5, label = "OK", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -99.5, y = 31.5, label = "TX", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -94.5, y = 46, label = "MN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -93.3, y = 42.2, label = "IA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 38.5, label = "MO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 35, label = "AR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.6, y = 31.3, label = "LA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -90, y = 45, label = "WI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89, y = 40, label = "IL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89.5, y = 33, label = "MS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.8, y = 43.5, label = "MI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86, y = 40, label = "IN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.5, y = 37.7, label = "KY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.3, y = 35.8, label = "TN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.7, y = 33, label = "AL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -82.7, y = 40.3, label = "OH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -83.3, y = 32.8, label = "GA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -81.5, y = 28.5, label = "FL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -77.8, y = 40.9, label = "PA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 38.5, label = "WV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -78.5, y = 37.5, label = "VA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -79.5, y = 35.7, label = "NC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 34, label = "SC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -75, y = 43, label = "NY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -69, y = 45.5, label = "ME", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74.5, y = 36.5, label = "DC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74, y = 37.5, label = "MD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73.8, y = 38.5, label = "DE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73, y = 39.5, label = "NJ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72, y = 40.2, label = "CT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -70.5, y = 40.7, label = "RI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.5, y = 42, label = "MA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.8, y = 43.2, label = "NH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+# Sports, Exercise, & Recreation
+time_state %>%
+  filter(TIME_ACTIVITY == 'Sports, Exercise, & Recreation') %>%
+  ggplot(aes(x = long, y = lat, fill = avg_time)) +
+  geom_polygon(aes(group = group)) +
+  geom_path(aes(group = group), color = 'black') +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_map() +
+  labs(title = 'Average Time Spent on Sports, Exercise, & Recreation Per Day (in minutes)',
+       fill = 'Average Time \n(in minutes)') +
+   theme(legend.position = c(0.85, 0.2),
+         legend.background = element_rect(linetype = "solid", colour ="black"),
+         plot.title = element_text(hjust = 0.5, face = "bold")) +
+  scale_fill_gradient(low = "white", high = "mediumblue") +
+  annotate(geom = "text", x = -120, y = 47.5, label = "WA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -120.5, y = 44, label = "OR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -119.8, y = 37, label = "CA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -114.5, y = 43.8, label = "ID", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -116.8, y = 39.6, label = "NV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 39.4, label = "UT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 34.5, label = "AZ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -109, y = 47, label = "MT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -107.5, y = 43, label = "WY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -105.5, y = 39, label = "CO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -106, y = 34.5, label = "NM", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.7, y = 47.5, label = "ND", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.5, y = 44.5, label = "SD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100, y = 41.5, label = "NE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -98.8, y = 38.5, label = "KS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -96.5, y = 35.5, label = "OK", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -99.5, y = 31.5, label = "TX", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -94.5, y = 46, label = "MN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -93.3, y = 42.2, label = "IA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 38.5, label = "MO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 35, label = "AR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.6, y = 31.3, label = "LA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -90, y = 45, label = "WI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89, y = 40, label = "IL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89.5, y = 33, label = "MS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.8, y = 43.5, label = "MI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86, y = 40, label = "IN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.5, y = 37.7, label = "KY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.3, y = 35.8, label = "TN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.7, y = 33, label = "AL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -82.7, y = 40.3, label = "OH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -83.3, y = 32.8, label = "GA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -81.5, y = 28.5, label = "FL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -77.8, y = 40.9, label = "PA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 38.5, label = "WV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -78.5, y = 37.5, label = "VA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -79.5, y = 35.7, label = "NC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 34, label = "SC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -75, y = 43, label = "NY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -69, y = 45.5, label = "ME", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74.5, y = 36.5, label = "DC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74, y = 37.5, label = "MD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73.8, y = 38.5, label = "DE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73, y = 39.5, label = "NJ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72, y = 40.2, label = "CT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -70.5, y = 40.7, label = "RI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.5, y = 42, label = "MA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.8, y = 43.2, label = "NH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+# Traveling
+time_state %>%
+  filter(TIME_ACTIVITY == 'Traveling') %>%
+  ggplot(aes(x = long, y = lat, fill = avg_time)) +
+  geom_polygon(aes(group = group)) +
+  geom_path(aes(group = group), color = 'black') +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_map() +
+  labs(title = 'Average Time Spent on Traveling Per Day (in minutes)',
+       fill = 'Average Time \n(in minutes)') +
+   theme(legend.position = c(0.85, 0.2),
+         legend.background = element_rect(linetype = "solid", colour ="black"),
+         plot.title = element_text(hjust = 0.5, face = "bold")) +
+  scale_fill_gradient(low = "white", high = "darkgreen") +
+  annotate(geom = "text", x = -120, y = 47.5, label = "WA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -120.5, y = 44, label = "OR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -119.8, y = 37, label = "CA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -114.5, y = 43.8, label = "ID", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -116.8, y = 39.6, label = "NV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 39.4, label = "UT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 34.5, label = "AZ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -109, y = 47, label = "MT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -107.5, y = 43, label = "WY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -105.5, y = 39, label = "CO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -106, y = 34.5, label = "NM", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.7, y = 47.5, label = "ND", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.5, y = 44.5, label = "SD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100, y = 41.5, label = "NE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -98.8, y = 38.5, label = "KS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -96.5, y = 35.5, label = "OK", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -99.5, y = 31.5, label = "TX", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -94.5, y = 46, label = "MN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -93.3, y = 42.2, label = "IA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 38.5, label = "MO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 35, label = "AR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.6, y = 31.3, label = "LA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -90, y = 45, label = "WI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89, y = 40, label = "IL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89.5, y = 33, label = "MS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.8, y = 43.5, label = "MI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86, y = 40, label = "IN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.5, y = 37.7, label = "KY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.3, y = 35.8, label = "TN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.7, y = 33, label = "AL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -82.7, y = 40.3, label = "OH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -83.3, y = 32.8, label = "GA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -81.5, y = 28.5, label = "FL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -77.8, y = 40.9, label = "PA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 38.5, label = "WV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -78.5, y = 37.5, label = "VA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -79.5, y = 35.7, label = "NC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 34, label = "SC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -75, y = 43, label = "NY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -69, y = 45.5, label = "ME", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74.5, y = 36.5, label = "DC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74, y = 37.5, label = "MD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73.8, y = 38.5, label = "DE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73, y = 39.5, label = "NJ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72, y = 40.2, label = "CT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -70.5, y = 40.7, label = "RI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.5, y = 42, label = "MA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.8, y = 43.2, label = "NH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+# Work & Work-Related Activities
+time_state %>%
+  filter(TIME_ACTIVITY == 'Work & Work-Related Activities') %>%
+  ggplot(aes(x = long, y = lat, fill = avg_time)) +
+  geom_polygon(aes(group = group)) +
+  geom_path(aes(group = group), color = 'black') +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_map() +
+  labs(title = 'Average Time Spent on Work & Work-Related Activities Per Day (in minutes)',
+       fill = 'Average Time \n(in minutes)') +
+   theme(legend.position = c(0.85, 0.2),
+         legend.background = element_rect(linetype = "solid", colour ="black"),
+         plot.title = element_text(hjust = 0.5, face = "bold")) +
+  scale_fill_gradient(low = "white", high = "coral4") +
+  annotate(geom = "text", x = -120, y = 47.5, label = "WA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -120.5, y = 44, label = "OR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -119.8, y = 37, label = "CA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -114.5, y = 43.8, label = "ID", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -116.8, y = 39.6, label = "NV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 39.4, label = "UT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -111.5, y = 34.5, label = "AZ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -109, y = 47, label = "MT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -107.5, y = 43, label = "WY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -105.5, y = 39, label = "CO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -106, y = 34.5, label = "NM", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.7, y = 47.5, label = "ND", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100.5, y = 44.5, label = "SD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -100, y = 41.5, label = "NE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -98.8, y = 38.5, label = "KS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -96.5, y = 35.5, label = "OK", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -99.5, y = 31.5, label = "TX", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -94.5, y = 46, label = "MN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -93.3, y = 42.2, label = "IA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 38.5, label = "MO", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.5, y = 35, label = "AR", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -92.6, y = 31.3, label = "LA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -90, y = 45, label = "WI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89, y = 40, label = "IL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -89.5, y = 33, label = "MS", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.8, y = 43.5, label = "MI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86, y = 40, label = "IN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -84.5, y = 37.7, label = "KY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.3, y = 35.8, label = "TN", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -86.7, y = 33, label = "AL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -82.7, y = 40.3, label = "OH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -83.3, y = 32.8, label = "GA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -81.5, y = 28.5, label = "FL", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -77.8, y = 40.9, label = "PA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 38.5, label = "WV", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -78.5, y = 37.5, label = "VA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -79.5, y = 35.7, label = "NC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -80.8, y = 34, label = "SC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -75, y = 43, label = "NY", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -69, y = 45.5, label = "ME", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74.5, y = 36.5, label = "DC", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -74, y = 37.5, label = "MD", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73.8, y = 38.5, label = "DE", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -73, y = 39.5, label = "NJ", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72, y = 40.2, label = "CT", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -70.5, y = 40.7, label = "RI", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.5, y = 42, label = "MA", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -68.8, y = 43.2, label = "NH", size = 3, fontface = "bold") +
+  annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
+```
+
