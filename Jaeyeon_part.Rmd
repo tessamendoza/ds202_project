@@ -98,8 +98,8 @@ time_jaeyeon_longer$TIME_ACTIVITY = as.factor(time_jaeyeon_longer$TIME_ACTIVITY)
 levels(time_jaeyeon_longer$TIME_ACTIVITY) =  c("Eating & Drinking", 
                                 "Personal Care", 
                                 "Religious & Spiritual Activities", 
-                                "Socializing, Relaxing, & Leisure", 
-                                "Sports, Exercise, & Recreation", 
+                                "Socializing, Relaxing & Leisure", 
+                                "Sports, Exercise & Recreation", 
                                 "Traveling", 
                                 "Work & Work-Related Activities")
 # Check new levels
@@ -147,7 +147,7 @@ time_jaeyeon_longer %>%
   ggplot(aes(x = reorder(TIME_ACTIVITY, avg_time), weight = avg_time, fill = SEX)) + 
   geom_bar(position = 'dodge') +
   coord_flip() +
-  ggtitle('Barplot of Time Usage by Gender') +
+  ggtitle('Side-by-Side Barplot of Time Usage by Gender') +
   xlab('Activity') +
   ylab('Average Time Spent per Day (in minutes)') +
   labs(fill = 'Gender')
@@ -175,7 +175,7 @@ time_jaeyeon_longer %>%
   ggplot(aes(x = reorder(RACE, avg_time), weight = avg_time, fill = TIME_ACTIVITY)) + 
   geom_bar(position = 'fill') +
   coord_flip() +
-  ggtitle('Barplot of Time Usage by Race') +
+  ggtitle('Proportional Barplot of Time Usage by Race') +
   xlab('Race') +
   ylab('Average Time Spent per Day (in minutes)') +
   labs(fill = 'Activity')
@@ -305,7 +305,6 @@ time_state %>%
   annotate(geom = "text", x = -68.5, y = 42, label = "MA", size = 3, fontface = "bold") +
   annotate(geom = "text", x = -68.8, y = 43.2, label = "NH", size = 3, fontface = "bold") +
   annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
-
 ```
 
 
@@ -444,13 +443,13 @@ time_state %>%
 ```{r, message = FALSE, warning = FALSE, echo = FALSE}
 # Socializing, Relaxing, & Leisure
 time_state %>%
-  filter(TIME_ACTIVITY == 'Socializing, Relaxing, & Leisure') %>%
+  filter(TIME_ACTIVITY == 'Socializing, Relaxing & Leisure') %>%
   ggplot(aes(x = long, y = lat, fill = avg_time)) +
   geom_polygon(aes(group = group)) +
   geom_path(aes(group = group), color = 'black') +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
   theme_map() +
-  labs(title = 'Average Time Spent on Socializing, Relaxing, & Leisure Per Day (in minutes)',
+  labs(title = 'Average Time Spent on Socializing, Relaxing & Leisure Per Day (in minutes)',
        fill = 'Average Time \n(in minutes)') +
    theme(legend.position = c(0.85, 0.2),
          legend.background = element_rect(linetype = "solid", colour ="black"),
@@ -510,13 +509,13 @@ time_state %>%
 ```{r, message = FALSE, warning = FALSE, echo = FALSE}
 # Sports, Exercise, & Recreation
 time_state %>%
-  filter(TIME_ACTIVITY == 'Sports, Exercise, & Recreation') %>%
+  filter(TIME_ACTIVITY == 'Sports, Exercise & Recreation') %>%
   ggplot(aes(x = long, y = lat, fill = avg_time)) +
   geom_polygon(aes(group = group)) +
   geom_path(aes(group = group), color = 'black') +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
   theme_map() +
-  labs(title = 'Average Time Spent on Sports, Exercise, & Recreation Per Day (in minutes)',
+  labs(title = 'Average Time Spent on Sports, Exercise & Recreation Per Day (in minutes)',
        fill = 'Average Time \n(in minutes)') +
    theme(legend.position = c(0.85, 0.2),
          legend.background = element_rect(linetype = "solid", colour ="black"),
