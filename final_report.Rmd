@@ -724,12 +724,121 @@ time_state %>%
 
 <hr>
 
-## Life Satisfaction & Time Usage
+*Life Satisfaction & Time Usage*
+The data in this portion was taken from removing all rows = null in the WBLADDER column. This analysis will show you peoples life satisfaction, 
+work, and social activities around the US.
+
+##### In what ways do people spend their time?
+```{r message=FALSE, warning=FALSE}
+time1 <- time %>%
+  group_by(WBLADDER, REGION, ACT_FOOD, ACT_PCARE, ACT_RELIG, ACT_SOCIAL, ACT_SPORTS, ACT_TRAVEL, ACT_WORK) %>%
+  summarise(num = n()) %>%
+  filter(WBLADDER != 999) 
+
+time1$WBLADDER <- factor(time1$WBLADDER, labels = c("Worst", "Horrible", "Bad", "Sucks", "Alright", "Fine", "Good", "Great", "Amazing", "Greatest", "Best"))
+time1$REGION <- factor(time1$REGION, labels = c("Northeast", "Midwest", "South", "West"))
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_FOOD)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Food")
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_SPORTS)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Sports")
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_RELIG)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "RELIG")
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_SOCIAL)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Social")
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_TRAVEL)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Travel")
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_WORK)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Work")
+
+ggplot(time1, aes(x = WBLADDER, y = ACT_PCARE)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Personal Care")
+```
+Each of these above graphs shows average minutes of time at each life quality that people reported for the activity. The most interesting graph of these to me is the Religious activities. There is a large drop off from the first bar where I would assume people are being forced to attend religious activites. Another interesting set would be Personal Care graph. Personal care includes sleep which will take up most of the personal care time. Based on this it shows that the more you sleep the lower your life satisfaction.
 
 ##### Which region in the US has the highest life satisfaction? least?
-##### Which region spends the most time working? 
-##### Which region is the most social? Does this correspond with life satisfaction?
+```{r}
+states <- map_data('state')
+state_codes <- read.table("https://raw.githubusercontent.com/tessamendoza/ds202_project/main/state_codes.csv", sep = ",", header = TRUE)
+state_codes <- state_codes %>%
+  mutate(STATE = tolower(STATE))
 
+
+ggplot(time2, aes( x = REGION, y = WBLADDER)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Region", y = "Satisfaction", title = "Satisfaction by region") 
+
+
+time3 <- time %>%
+  filter(WBLADDER != 999)
+
+satByState <- time3 %>%
+  group_by(STATEFIP) %>%
+  summarize(avgSat = mean(WBLADDER)) %>%
+  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+stateMap <- states %>%
+  left_join(satByState, by = c('region' = 'STATE'))
+
+ggplot(stateMap %>% group_by(region), aes(x=long, y=lat, fill = avgSat)) + 
+  geom_polygon(aes(group=group), color = "black") + theme_map() + labs(title = "Average Satisfaction (1-10) By State") +
+  scale_fill_gradient(low='#992222', high="white")
+
+#Highest Satisfaction
+satByState[which.max(satByState$avgSat),]
+#Lowest Satisfaction
+satByState[which.min(satByState$avgSat),]
+```
+Based on this data there is not a specific region that is more satisfied as they are all fairly equal. However Hawaii is the least satisfied state whereas DC is the most satisfied. 
+##### Which region spends the most time working? 
+```{r}
+
+time4 <- time %>%
+  filter(ACT_WORK != 0)
+time4$REGION <- factor(time4$REGION, labels = c("Northeast", "Midwest", "South", "West"))
+ggplot(time4, aes( x = REGION, y = ACT_WORK)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Region", y = "Total Minutes", title = "Work")
+
+
+WorkByState <- time4 %>%
+  group_by(STATEFIP) %>%
+  summarize(avgWork = mean(ACT_WORK)) %>%
+  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+stateMap <- states %>%
+  left_join(WorkByState, by = c('region' = 'STATE'))
+
+ggplot(stateMap %>% group_by(region), aes(x=long, y=lat, fill = avgWork)) + 
+  geom_polygon(aes(group=group), color = "black") + theme_map() + labs(title = "Average Work by state") +
+  scale_fill_gradient(low='white', high="#992222")
+
+#most work
+WorkByState[which.max(WorkByState$avgWork),]
+#least work
+WorkByState[which.min(WorkByState$avgWork),]
+```
+Based on the regional graph and US map it is easy to see that the South is the highest working region.
+
+##### Which region is the most social? Does this correspond with life satisfaction?
+```{r}
+time5 <- time 
+
+ggplot(time2, aes( x = REGION, y = ACT_SOCIAL)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Region", y = "Total Minutes", title = "Social Activites")
+
+
+SocByState <- time5 %>%
+  group_by(STATEFIP) %>%
+  summarize(avgSoc = mean(ACT_SOCIAL)) %>%
+  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+stateMap <- states %>%
+  left_join(SocByState, by = c('region' = 'STATE'))
+
+ggplot(stateMap %>% group_by(region), aes(x=long, y=lat, fill = avgSoc)) + 
+  geom_polygon(aes(group=group), color = "black") + theme_map() + labs(title = "Average Social Activites By State") +
+  scale_fill_gradient(low='white', high="#992222")
+
+ggplot(time1, aes(fill = REGION, x = WBLADDER, y = ACT_SOCIAL)) + geom_bar(stat = "summary", fun.y = "mean", position = "dodge") +   labs(x = "Satisfaction", y = "Total Minutes", title = "Social Activites by Region")
+
+#most social
+SocByState[which.max(SocByState$avgSoc),]
+#least social
+SocByState[which.min(SocByState$avgSoc),]
+```
+
+Based on the above graphs you can see that the West is the least social by far. This doesn't necessarily correspond to life satisfaction and the west was equally satisfied compared to the other states.
 <hr>
 
 ## Health & Time Usage
