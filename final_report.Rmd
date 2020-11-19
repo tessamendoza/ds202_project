@@ -52,6 +52,17 @@ states = map_data('state')
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results=FALSE}
+# overall data cleaning
+statecode = statecode %>%
+  mutate(STATE = tolower(STATE))
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results=FALSE}
+#################################### Jaeyeon's Part #################################### 
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results=FALSE}
 # clean data
 time_jaeyeon = time %>%
   select(REGION, STATEFIP, AGE, SEX, RACE, starts_with('ACT_'))
@@ -756,12 +767,6 @@ Each of these above graphs shows average minutes of time at each life quality th
 
 ##### Which region in the US has the highest life satisfaction? least?
 ```{r}
-states <- map_data('state')
-state_codes <- read.table("https://raw.githubusercontent.com/tessamendoza/ds202_project/main/state_codes.csv", sep = ",", header = TRUE)
-state_codes <- state_codes %>%
-  mutate(STATE = tolower(STATE))
-
-
 ggplot(time2, aes( x = REGION, y = WBLADDER)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Region", y = "Satisfaction", title = "Satisfaction by region") 
 
 
@@ -771,7 +776,7 @@ time3 <- time %>%
 satByState <- time3 %>%
   group_by(STATEFIP) %>%
   summarize(avgSat = mean(WBLADDER)) %>%
-  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+  left_join(statecode, by = c("STATEFIP" = 'STATEFIP'))
 stateMap <- states %>%
   left_join(satByState, by = c('region' = 'STATE'))
 
@@ -797,7 +802,7 @@ ggplot(time4, aes( x = REGION, y = ACT_WORK)) + geom_bar(stat = "summary", fun.y
 WorkByState <- time4 %>%
   group_by(STATEFIP) %>%
   summarize(avgWork = mean(ACT_WORK)) %>%
-  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+  left_join(statecode, by = c("STATEFIP" = 'STATEFIP'))
 stateMap <- states %>%
   left_join(WorkByState, by = c('region' = 'STATE'))
 
@@ -821,8 +826,8 @@ ggplot(time2, aes( x = REGION, y = ACT_SOCIAL)) + geom_bar(stat = "summary", fun
 
 SocByState <- time5 %>%
   group_by(STATEFIP) %>%
-  summarize(avgSoc = mean(ACT_SOCIAL)) %>%
-  left_join(state_codes, by = c("STATEFIP" = 'STATEFIP'))
+  summarize(statecode = mean(ACT_SOCIAL)) %>%
+  left_join(statecode, by = c("STATEFIP" = 'STATEFIP'))
 stateMap <- states %>%
   left_join(SocByState, by = c('region' = 'STATE'))
 
