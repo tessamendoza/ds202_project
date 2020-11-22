@@ -4,7 +4,7 @@
 
 
 ## **Introduction**
-Every day, individuals in America differently allocate their time between various activities, such as work, leisure, personal care, socializing, and other activities. As understanding this individual time usage is a complicated task, exploring the their time usage as a whole can be helpful in obtaining the general picture on human activity. Practically, our paper could also be the most valuable resources for promoting social and economic activities performed in the United States, by providing informative analysis. With the purpose of gaining insight into how Americans spend their time, this project investigates the overall trends and patterns of their activity time use in relation to several interesting factors, using various visualizations.
+Every day, individuals in America differently allocate their time between various activities, such as work, leisure, personal care, socializing, and other activities. As understanding this individual time usage is a complicated task, exploring the their time usage as a whole can be helpful in obtaining the general picture on human activity. Practically, it could also be the most valuable resources for promoting social and economic activities performed in the United States, by providing informative analysis. With the purpose of gaining insight into how Americans spend their time, this project investigates the overall trends and patterns of their activity time use in relation to several interesting factors, using various visualizations. Specifically, we explore 7 different types of time use: 'Eating & Drinking', 'Personal Care', 'Religious & Spiritual Activities', 'Socializing, Relaxing & Leisure', 'Sports, Exercise & Recreation', 'Traveling', and 'Work & Work-Related Activities.'
 
 ![People in New York](https://offloadmedia.feverup.com/secretnyc.co/wp-content/uploads/2019/01/10132249/people-1024x597.jpg)
 
@@ -37,6 +37,8 @@ Our dataset and the codebook can be found at https://github.com/tessamendoza/ds2
 <hr>
 
 ## **Exploratory Analysis**
+
+This section explores the basic information about how demographics and living locations are associated to time usage. The demographic factors include age, gender, and race, and the geographical factors involve region and state. The analysis on associations between geography and time use does not include Alaska and Hawaii.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results=FALSE}
 library(tidyverse)
@@ -156,6 +158,8 @@ time_jaeyeon_longer %>%
         plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
+Figure 1 illustrates the proportional bar graph of American's time usage pattern by different age groups. We observe here that the amount of time used on personal care stays similar across different age groups. While Americans spend more time on eating and drinking, religious activities, and socializing as they get older, their time use on relatively active activities, such as sports, travels, and work, shows a decreasing trend as getting older.
+
 **- How Does Time Usage Differ By Gender?**
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, fig.align='center'}
 # Side by Side Barplot
@@ -173,8 +177,11 @@ time_jaeyeon_longer %>%
        caption = 'Figure 2: Side-by-Side Bar Graph of Average Time Spent per Day by Gender (in minutes)') +
   theme(plot.caption = element_text(hjust = 0.5),
         panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, face = "bold"))
+        plot.title = element_text(hjust = 0.5, face = "bold")) +
+  scale_fill_manual(values = c("#00BFC4", "#F8766D"))
 ```
+
+We see the time usage pattern by gender in Figure 2. Here, it is clear that both males and females spend the most time on personal care and the least time on religious activities. Looking closer, we can also see that males spend relatively more time on socializing, working, traveling, eating and drinking, and exercising than females. On the other hand, females spend more time on their personal care and religious activities than males do.
 
 **- How Does Time Usage Differ By Race?**
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, fig.align='center'}
@@ -195,6 +202,8 @@ time_jaeyeon_longer %>%
         panel.background = element_blank(),
         plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
+
+Analyzing the the relationship between race and time usage, we found the results above in Figure 3. In detail, we found that different races have a similar trend in general. However, Hawaiian Pacific islanders as well as Asians are determined to spend more time working, on average, than other races. Asians also tend to allocate more time for personal care and eating and drinking. Despite Asians' tendency to work more, they spend the least time socializing, relaxing, and doing leisure activities than other races do.
 
 **- How Does Time Usage Differ By U.S. Region?**
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, fig.align='center'}
@@ -236,6 +245,8 @@ time_jaeyeon_region %>%
   theme(plot.caption = element_text(hjust = 0.5),
         plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
+
+In terms of the geographical relations to American's time use pattern, we firstly looked at the regions in the United States, which are divided into the four following areas: West, Midwest, Northeast, and South. Based on Figure 4, we observe that people in the West tend to eat and drink the most (71 minutes per day) while the people in the South spend the least time on this activity (64 minutes per day). Similarly, Western people spend around 22 minutes per day on sports, exercise, and recreation, as the leading active region, whereas the Southern people spend the least amount of time (17 minutes per day). On the contrary, these two regions show an opposite pattern in terms of the socializing, relaxing, and leisure activities. For example, Southern residents spend the most time (302 minutes per day) for these activities, whereas the Western people spend the least time (279 minutes per day). Regarding personal care and religious activities, both activities are the most popular in the South while they are both the least popular in the Northeast. The residents in the Midwest are the most hard-working people, while they spend the least time traveling. Unlike from the Midwestern people, the Northeast spends the least time on work-related activities and the most time traveling.
 
 **- How Does Time Usage Differ By State?**
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results=FALSE}
@@ -718,6 +729,10 @@ time_jaeyeon_state %>%
   annotate(geom = "text", x = -68.8, y = 43.2, label = "NH", size = 3, fontface = "bold") +
   annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
 ```
+
+Different time use patterns by state for various types of activities are shown in the 7 maps above. The states with more time spent on each activity are colored in darker colors, and the states with less time spent are colored in brighter colors. 
+
+Comparing the eating and drinking activities and personal care activities, we observe that Vermont, on average, spend the most time eating and drinking and the least time on personal care. On the other hand, Mississippi shows the exact opposite pattern that they spend the most time on personal care and the least time eating and drinking. Similarly, Work-related activities and socializing activities show an opposite trend by state. The states, such as North Dakota, Wyoming, and Colorado, where the work-related activities were the most active time use, spend the least time on socializing activities. Conversely, the states, such West Virginia, Louisiana, Mississippi, and Alabama, where they spend the most time on socializing activities were determined to spend the least time on work-related activities. In terms of the religious and spiritual activities, Mississippi, Alabama, South Carolina, and Utah spend the most time while some of the states in the Northeast region spend the least amount of time. The sports and exercise are the most popular activities in Vermont and Montana. The people in DC and Maryland tend to like to travel the most while the people in Louisiana and Mississippi tend to not.
 
 <hr>
 
