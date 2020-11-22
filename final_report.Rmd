@@ -1311,12 +1311,323 @@ Here, there is a general positive correlation between an individual's amount of 
 
 ## Work-Life Balance
 
-#### *How does an individual's work time correspond to their income? travel time?*
-#### *Do parents with children at home travel more or less than individuals with no children at home?*
+#### *How does an individual's work time correlate to their other activities?*
+#### *How does the presence or lack of children affect time-use?*
+
+
+
+
+
+
+```{r}
+library(ggcorrplot)
+library(ggpubr)
+#load data
+time <-read_csv("time.csv")
+# change the 0/1 option for kids / no kids into a useful factor
+time_jay <- time %>% mutate(kids = factor(ifelse(HH_CHILD==1,'children','no children')))
+
+# we are going to bin the data of our time use data for analysis
+
+breaks <- c(0,240,480,720,Inf)
+labels <-c("0-3.99 hours", "4-7.99 hours", "8-11.99 hours", "12+ hours")
+time_jay$work_time_bins <- cut(time_jay$ACT_WORK, breaks = breaks, labels = labels, right=FALSE)
+
+breaks <- c(0,120,240,360,480,Inf)
+labels <-c("0-1.99 hours", "2-3.99 hours", "4-5.99 hours", "6-7.99 hours","8+")
+time_jay$travel_time_bins <- cut(time_jay$ACT_TRAVEL, breaks = breaks, labels = labels, right=FALSE)
+
+
+breaks <- c(0,30,60,90,Inf)
+labels <-c("0-29 minutes", "30-59 minutes", "60-89 minutes", "90+ minutes")
+time_jay$relig_time_bins <- cut(time_jay$ACT_RELIG, breaks = breaks, labels = labels, right=FALSE)
+
+breaks <- c(0,60,120,180,240,Inf)
+labels <-c("0-59 minutes", "60-119 minutes", "120-179 minutes", "180-239 minutes"," 240+")
+time_jay$social_time_bins <- cut(time_jay$ACT_SOCIAL, breaks = breaks, labels = labels, right=FALSE)
+
+```
+
+In the IPUMS data, a day is considered 4am to 3:59am the following morning. Respondants are supposedly logging time use details in a diary which is then collated into a huge data set online, which we are able to subset into desired variables via a web interface. 
+
+In order to better visualize how the data is shaped between respondants with children and those without, we created discrete bins of the time data for several catagories: Time spent working, time spent traveling, time spent in religous activities, and time spent in social activities. We tried to break the discrete time values up into units which we felt reasonable, based on some quick data explorations when we first received the data set. 
+
+We also changed the 1 or 0 values under the "Children in the household" variable, HH_CHILD, to "children" and "no children."
+
+
+
+
+<h3>Data Exploration</h3>
+
+Here is a very quick bit of data exploration..... what are the mean minutes reported spent engaged in a variety of activities, between households with children and household without children. 
+
+```{r}
+
+
+#some quick means for the groups, just to see
+time_jay %>% group_by(kids) %>% summarise(n=n(),
+                                                  mean_act_work = mean(ACT_WORK),
+                                                  mean_act_social = mean(ACT_SOCIAL),
+                                                  mean_act_relig = mean(ACT_RELIG),
+                                                  mean_act_travel = mean(ACT_TRAVEL))
+```
+
+```{r}
+time_jay %>%  
+  filter(ACT_SOCIAL>0) %>% 
+  ggplot(aes(kids,ACT_SOCIAL)) + geom_boxplot() +
+  ggtitle(label="boxplot of act_social", subtitle="where social>0") + 
+  ylab("social time. minutes per day?") + 
+  xlab("Family status")
+```
+
+This boxplot shows the distribution of minutes spent in social time, excluding respondant who reported 0 social time. 
+
+
+```{r}
+
+time_jay %>% 
+  filter(ACT_RELIG > 0) %>% 
+  ggplot(aes(kids,ACT_RELIG)) + geom_boxplot() + 
+  ggtitle(label="Boxplot of ACT_RELIG", subtitle="Excluding respondants who reported 0") + 
+  ylab("relig time. minutes per day") + 
+  xlab("Family status")
+
+```
+
+This is the distribution of reported time spent enaged in religious activities by people who reported more than 0 minutes per day engaged in religious activities. 
+
+
+```{r}
+
+
+time_jay %>%  filter(ACT_TRAVEL>0) %>%
+  ggplot(aes(kids,ACT_TRAVEL)) + geom_boxplot() +
+  ggtitle(label="Boxplot of ACT_TRAVEL", subtitle="Where traveling time is greater than 0") + 
+  ylab("travel time. minutes per ___?") + 
+  xlab("Family status")
+
+```
+
+There are a lot of outliers in this boxplot of ACT_TRAVEL time between those with children and those without. . How much time can one really travel in a day?
+
+
+
+
+
+
+
+
+
+
+#kids & work#
+
+```{r}
+time_jay %>%
+  ggplot(aes(x=work_time_bins, y=ACT_WORK)) + geom_boxplot(aes(color=kids)) + ggtitle("Boxplot of minutes worked daily by child status") + xlab('Reported Daily Hours') + ylab('Minutes worked')
+
+
+time_jay %>% 
+  group_by(kids, work_time_bins) %>% 
+  summarize(n = n(), mean_work_minutes = mean(ACT_WORK))
+
+time_jay %>% 
+  group_by(kids, work_time_bins) %>% 
+  summarize(n = n(), mean_work_minutes = mean(ACT_WORK)) %>%
+  ggplot(aes(x=work_time_bins, y=mean_work_minutes)) + 
+  geom_linerange(aes(x=work_time_bins, ymin=0, ymax=mean_work_minutes, group=kids), 
+                 color="lightgray", 
+                 position=position_dodge(0.3), 
+                 size=1.5) + 
+  geom_point(aes(color=kids), position=position_dodge(0.3), size=3) + 
+  theme_pubclean() + 
+  ggtitle("Average minutes worked by daily hours and child status") + 
+  ylab("Mean minutes worked per day") + xlab("Reported daily hours worked")
+
+
+```
+
+We broke the amount people worked into three bins, essentially less than half time, half time to full time, and over-time workers, and determined the mean minutes worked for both households with children and households without. The boxplot shows the distribution of our data and the second plot nicely visualizes how much time each group spends compard to the other. This appears to indicate that for the most parts across our time-worked bins, households with and households without children have similar mean minutes spent working per day. 
+
+# kids & Travel #
+
+```{r}
+time_jay  %>%
+  ggplot(aes(x=travel_time_bins, y=ACT_TRAVEL)) + geom_boxplot(aes(color=kids)) + ggtitle(label="Boxplot of minutes traveled daily by child status", subtitle="subtitle") + xlab('Binned times') + ylab('Minutes travelling')
+
+## because there are so many data points greater than full-time traveling, it's hard to compre the lows and the highs. 
+
+time_jay %>% 
+  group_by(kids, travel_time_bins) %>% 
+  summarize(n = n(), mean_travel_minutes = mean(ACT_TRAVEL))
+
+
+time_jay %>% 
+  group_by(kids, travel_time_bins) %>% 
+  summarize(n = n(), mean_travel_minutes = mean(ACT_TRAVEL)) %>%
+  ggplot(aes(x=travel_time_bins, y=mean_travel_minutes)) + 
+  geom_linerange(aes(x=travel_time_bins, ymin=0, ymax=mean_travel_minutes, group=kids), 
+                 color="lightgray", 
+                 position=position_dodge(0.3), 
+                 size=1.5) + 
+  geom_point(aes(color=kids), position=position_dodge(0.3), size=3) + 
+  theme_pubclean() + 
+  ggtitle("Average minutes traveld by daily hours and child status") + 
+  ylab("Mean minutes traveling per day") + xlab("Reported daily hours traveling")
+
+```
+
+Our boxplot shows how the data is distributed across the time spent. Our second box seems to indicate that family with children report slightly more time spent travelling than the no children group.
+
+#kids & religious# 
+
+```{r}
+time_jay  %>%
+  ggplot(aes(x=relig_time_bins, y=ACT_RELIG)) + geom_boxplot(aes(color=kids)) + ggtitle(label="Boxplot of minutes religious daily by child status", subtitle="subtitle") + xlab('Binned times') + ylab('Minutes religious')
+
+
+time_jay %>% 
+  group_by(kids, relig_time_bins) %>% 
+  summarize(n = n(), mean_relig_minutes = mean(ACT_RELIG))
+
+
+time_jay %>% 
+  group_by(kids, relig_time_bins) %>% 
+  summarize(n = n(), mean_relig_minutes = mean(ACT_RELIG)) %>%
+  ggplot(aes(x=relig_time_bins, y=mean_relig_minutes)) + 
+  geom_linerange(aes(x=relig_time_bins, ymin=0, ymax=mean_relig_minutes, group=kids), 
+                 color="lightgray", 
+                 position=position_dodge(0.3), 
+                 size=1.5) + 
+  geom_point(aes(color=kids), position=position_dodge(0.3), size=3) + 
+  theme_pubclean() + 
+  ggtitle("Average minutes religious by daily hours and child status") + 
+  ylab("Mean minutes religious per day") + xlab("Reported daily hours religious")
+
+```
+
+The boxplot here is interesting to us in that there are a lot of possible outlier data above the 90 minuets a day mark. Perhaps this catagory would be better served by adding another block of time at two hours or above? Again, both plots show roughly equal time spent between those with and without children, except in the 90+ minute block, which shows a higher mean for those with no children. 
+#kids & social time#
+
+```{r}
+time_jay  %>%
+  ggplot(aes(x=social_time_bins, y=ACT_SOCIAL)) + geom_boxplot(aes(color=kids))
+
+time_jay %>% 
+  group_by(kids, social_time_bins) %>% 
+  summarize(n = n(), mean_social_minutes = mean(ACT_SOCIAL))
+
+time_jay %>% 
+  group_by(kids, social_time_bins) %>% 
+  summarize(n = n(), mean_social_minutes = mean(ACT_SOCIAL)) %>%
+  ggplot(aes(x=social_time_bins, y=mean_social_minutes)) + 
+  geom_linerange(aes(x=social_time_bins, ymin=0, ymax=mean_social_minutes, group=kids), 
+                 color="lightgray", 
+                 position=position_dodge(0.3), 
+                 size=1.5) + 
+  geom_point(aes(color=kids), position=position_dodge(0.3), size=3) + 
+  theme_pubclean() +
+  ggtitle("Average minutes social by daily hours and child status") +
+  ylab("Mean minutes social per day") + xlab("Reported daily hours social")
+
+```
+
+These plots are about time spent in social activities between those with and without children. The large number of outliers indicate to us that maybe another time block above four hours might be in order. In four of the catagories the mean time spent in social activity the mean minutes are roughly equal, but in the catagory of four or more hours per day there is a clear difference in the means between those with and those without children. We should probably not be surprised by this. 
+
+
+<h3>Relationships between times</h3>
+
+
+
+```{r}
+
+
+# this is a very ugly plot! too many data points!!!
+time_jay %>%  ggplot(aes(x=ACT_WORK, y=ACT_TRAVEL, color = kids)) + geom_point() + ggtitle("Work vs Travel") +ylab("Minutes traveling") + xlab("Minutes working")
+
+```
+This plot is not good. There are twoo many data points too closely packed together. But it attempts to show a relation between minutes spent traveling and minutes spent working. 
+
+
+
+```{r}
+
+time_jay %>%  ggplot(aes(x=ACT_WORK, y=ACT_TRAVEL, color = kids)) + 
+  geom_smooth(method=lm) + 
+  ggtitle(label="Work minutes by Travel minutes") +
+  xlab("Daily Minutes WORK") + ylab("Daily Minutes TRAVEL") + coord_cartesian(ylim=c(40,100),xlim=c(0,1400))
+```
+
+By using a regression line on our data, we might be able to better estimate how respondants use their time and look for signs of interaction or correlatoin between our variables. In this plot we see that respondans with children report about the same amount of travel time as time spent working increases. But for respondants with no children, there is a  steeper slope indicating that more time working might correlate to more time spent travelling. 
+
+
+
+```{r}
+time_jay %>%  ggplot(aes(x=ACT_WORK, y=ACT_RELIG, color = kids)) + 
+  geom_smooth(method=lm) + 
+  ggtitle(label="Work mintues by Religious minutes") +
+  xlab("Daily Minutes WORK") + ylab("Daily Minutes RELIG") + coord_cartesian(ylim=c(0,30),xlim=c(0,1400)) 
+
+```
+
+
+
+```{r}
+time_jay %>%  ggplot(aes(x=ACT_WORK, y=ACT_SOCIAL, color = kids)) + 
+  geom_smooth(method=lm) + 
+  ggtitle(label="Work mintues by Social minutes") +
+  xlab("Daily Minutes WORK") + ylab("Daily Minutes SOCIAL") + coord_cartesian(ylim=c(0,400),xlim=c(0,1400))
+
+```
+
+Among both respondants with children and those without, as minutes work increases, the amount of social time decreases.
+
+
+
+<h3>Possible correlations?</h3>
+```{r}
+time_jay %>% 
+  filter(kids=="no children") %>% 
+  select(ACT_WORK, ACT_SOCIAL, ACT_TRAVEL, ACT_RELIG) %>% 
+  cor() %>% 
+  ggcorrplot(method="square", lab=TRUE) + 
+  ggtitle("Correlation matrix - No Children")
+```
+
+We can use R to create a correlation matrix of our time-based variables. Among the no children group, there appears a moderate negative relation between work and social minutes, indicating that as minutes in work increase, minutes engaged in social time decrease. We should not be surprised at this based on the example charts from above. 
+
+
+```{r}
+# a correlation matrix of our time data, with kids, for work =0
+time_jay %>% 
+  filter(kids=="children") %>% 
+  select(ACT_WORK, ACT_SOCIAL, ACT_TRAVEL, ACT_RELIG) %>% 
+  cor() %>% 
+  ggcorrplot(method="square", lab=TRUE) + 
+  ggtitle("Correlation matrix - Children")
+
+```
+
+Removing children from the data set for our correlation only slightly lowers the strength of the possible correlations between our categories. Again, we should not be be surprised at this conclusion based on the previous charts we examined. 
+
+
 
 <hr>
 
 ## Conclusion
+
+The IPUMS Time-Use data set covers a wide range of social topics and demographics with the ability to create and download a data-set customized to your own needs. 
+
+<h4>Time Usage Over Time</h4>
+Time spent doing religious activities has decreased and time spent working has also decreased an equal amount across all regions in the US 
+<h4>Life Satisfaction & Time Usage</h4>
+The more a person can diversify their daily activities the greater their perceived life satisfaction will be 
+<h4>Health & Time Usage</h4>
+increased physical activity does not necessarily correlate to healthier BMI - other factors (nutrition, etc) must be involved
+<h4>Work-Life Balance</h4>
+Household with and without children, on the average, spend the same amount of time on the activities we examined.
+Work and social time have a negative correlation, work and the other activities have little correlation.  
+
 
 <hr>
 
