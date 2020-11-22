@@ -730,8 +730,39 @@ time_jaeyeon_state %>%
 
 ## Time Usage Over Time
 
-#### *Has time spent engaged in religious and spiritual activities changed over the last 15 years?*
-#### *Are Americans working more or less than they used to?*
+#### Has time spent engaged in religious and spiritual activities changed over the last 15 years?
+```{r cars}
+time %>% 
+  rename(religion = ACT_RELIG) %>%
+  ggplot(time, mapping = aes(x=YEAR, y=religion)) + geom_point()
+```
+
+The amount of time people spend participating in religious activities has remained stable since 2004. Every year, the majority is just below 500 minutes per day with a few outliers that spend much larger amounts of time, even going to 1000 minutes per day. Numbers have been relatively lower since 2013. 
+
+#### Are Americans working more or less than they used to? 
+```{r pressure, echo=FALSE}
+time$SEX <- factor(time$SEX, levels = c(1, 2), 
+                 labels = c("M", "F"))
+
+time %>% ggplot(time, mapping = aes(x = YEAR, y = ACT_WORK)) + geom_point() 
+
+ggplot(time, mapping = aes(x = YEAR, y = ACT_WORK, color=SEX)) + geom_point()+ 
+  labs(x = "Year", y = "Minutes per day spent working") +
+  scale_color_manual(values=c("blue", "red"))
+```
+
+The time spent working has also remained pretty stable since 2004. Most people spend at least 1000 minutes a day at work and many people spend up to 1500 minutes a day working. I did some math and realized that 1000 minutes a day equates to over 16.5 hours a day. This data set considers "work" to be activities physically at work, completing any work activities like going to lunch or playing golf with a client, doing anything that makes you money, applying for jobs or interviewing, and many other activities. Obviously not everyone works every single day for that long due to holidays, appointments, and vacations, but 16.5 hours a day is a baseline for lots of people in America. There is a slight dip in minutes worked in 2013, 2016, and 2018. There are many people spending zero minutes working per day which could be because of unemployed adults or children, as this data set includes people as young as 15.
+
+#### How has time spent working changed in various regions of the US?
+```{r pressure, echo=FALSE}
+time$REGION <- factor(time$REGION, labels = c("Northeast", "Midwest", "South", "West"))
+
+ggplot(time, aes(x = YEAR, y = ACT_WORK, fill = SEX)) + facet_grid(~REGION) + geom_bar(stat = 'identity') +
+  scale_fill_manual(values=c("#1287C9", "#AB3F54")) +
+  labs(x = "Year", y = "Minutes per day spent working")
+```
+
+Across all regions, minutes per day spent working has been steadily decreasing since 2004. The decline seems to be similar across all regions, with no region seeing a more significant change than any other. The region with the people who work the most is the south. Again, work isn't only the traditional 9-5 in this data set- it includes any work related activities that can make money, applying/interviewing for jobs, or reading things for work at home. People in the south spend more time working than any other region by quite a significant amount. The midwest and the west have people who work similar amounts, and the northeast is where people spend the least amount of time working. I also included gender in my analysis. From what this plot shows, men and women work similar amounts in every region and they are both experiencing the same decline in time spent working since 2004.
 
 <hr>
 
@@ -1314,11 +1345,6 @@ Here, there is a general positive correlation between an individual's amount of 
 #### *How does an individual's work time correlate to their other activities?*
 #### *How does the presence or lack of children affect time-use?*
 
-
-
-
-
-
 ```{r}
 library(ggcorrplot)
 library(ggpubr)
@@ -1639,6 +1665,7 @@ I contributed to this project by exploring possible datasets, finding the time u
 #### Jaeyeon Won
 
 #### Becca Barrick
+I contributed to the project by brainstorming themes we could explore and looking into various data sets on Kaggle. After deciding on our topic, I contributed by completing the time usage over time section of our project. I looked into how time spent on religious activities has changed over time, how time spent working has changed over time, and finally how time spent working in each specific region has changed over time. My individual analysis can be found on Github (*beccadata.Rmd*) as .html and .Rmd files. 
 
 #### Jay Maxwell
 
