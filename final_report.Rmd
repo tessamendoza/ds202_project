@@ -1642,7 +1642,7 @@ time_jay %>%
 We can use R to create a correlation matrix of our time-based variables. Among the no children group, there appears a moderate negative relation between work and social minutes, indicating that as minutes in work increase, minutes engaged in social time decrease. We should not be surprised at this based on the example charts from above. 
 
 
-```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}x
+```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 # a correlation matrix of our time data, with kids, for work =0
 time_jay %>% 
   filter(kids=="children") %>% 
