@@ -1400,50 +1400,208 @@ Figure 31 and Figure 32 show the average active time per day by BMI status and b
 
 ## **Work-Life Balance**
 
-The last section of this report provides insight about how Americans balance their work and other activities. This exploration is analyzed in relation to the presence of children. 
+The last section of this report provides insight about how Americans balance their work and other activities in relation to the presence of children. We specifically focused on finding the relationship between work and travel, religious activities, and social activities.
 
 **- How does the presence or lack of children affect time-use?**
 
+In order to better visualize how the data is shaped between respondents with children and those without, we created discrete bins of the time data for several categories: Time spent working, time spent traveling, time spent in religious activities, and time spent in social activities. We tried to break the discrete time values up into units which we felt reasonable, based on some quick data explorations when we first received the data set. We also changed the 1 or 0 values under the "Children in the household" variable, HH_CHILD, to "children" and "no children."
+
+```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
+#load data
+# change the 0/1 option for kids / no kids into a useful factor
+time_jay <- time %>% mutate(kids = factor(ifelse(HH_CHILD==1,'children','no children')))
+
+# we are going to bin the data of our time use data for analysis
+
+breaks <- c(0,240,480,720,Inf)
+labels <-c("0-3.99 hours", "4-7.99 hours", "8-11.99 hours", "12+ hours")
+time_jay$work_time_bins <- cut(time_jay$ACT_WORK, breaks = breaks, labels = labels, right=FALSE)
+
+breaks <- c(0,120,240,360,480,Inf)
+labels <-c("0-1.99 hours", "2-3.99 hours", "4-5.99 hours", "6-7.99 hours","8+ hours")
+time_jay$travel_time_bins <- cut(time_jay$ACT_TRAVEL, breaks = breaks, labels = labels, right=FALSE)
+
+
+breaks <- c(0,30,60,90,Inf)
+labels <-c("0-29 minutes", "30-59 minutes", "60-89 minutes", "90+ minutes")
+time_jay$relig_time_bins <- cut(time_jay$ACT_RELIG, breaks = breaks, labels = labels, right=FALSE)
+
+breaks <- c(0,60,120,180,240,Inf)
+labels <-c("0-59 minutes", "60-119 minutes", "120-179 minutes", "180-239 minutes"," 240+ minutes")
+time_jay$social_time_bins <- cut(time_jay$ACT_SOCIAL, breaks = breaks, labels = labels, right=FALSE)
+```
+
+```{r, echo=FALSE, message = FALSE, warning = FALSE, fig.align='default', fig.show="hold", out.width="50%"}
+time_jay %>% 
+  group_by(kids, work_time_bins) %>% 
+  summarize(n = n(), mean_work_minutes = mean(ACT_WORK)) %>%
+  ggplot(aes(x=work_time_bins, y=mean_work_minutes)) + 
+  geom_linerange(aes(x=work_time_bins, ymin=0, ymax=mean_work_minutes, group=kids), 
+                 color="lightgray", 
+                 position=position_dodge(0.3), 
+                 size=1.5) + 
+  geom_point(aes(color=kids), position=position_dodge(0.3), size=3) + 
+  theme_bw() +
+  xlab('Binned Working Time (in hours)') +
+  ylab('Average Time per Day (in minutes)') +
+  labs(title = 'Average Time Spent on Work Activities by Children Status',
+       caption = "Figure 33: Average Time Spent on Work Activities by Children Status")  +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.caption = element_text(hjust = 0.5))
+
+time_jay %>% 
+  group_by(kids, travel_time_bins) %>% 
+  summarize(n = n(), mean_travel_minutes = mean(ACT_TRAVEL)) %>%
+  ggplot(aes(x=travel_time_bins, y=mean_travel_minutes)) + 
+  geom_linerange(aes(x=travel_time_bins, ymin=0, ymax=mean_travel_minutes, group=kids), 
+                 color="lightgray", 
+                 position=position_dodge(0.3), 
+                 size=1.5) + 
+  geom_point(aes(color=kids), position=position_dodge(0.3), size=3) +
+  theme_bw() +
+  xlab('Binned Traveling Time (in hours)') +
+  ylab('Average Time per Day (in minutes)') +
+  labs(title = 'Average Time Spent on Travel Activities by Children Status',
+       caption = "Figure 34: Average Time Spent on Travel Activities by Children Status")  +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.caption = element_text(hjust = 0.5))
+
+
+time_jay %>% 
+  group_by(kids, relig_time_bins) %>% 
+  summarize(n = n(), mean_relig_minutes = mean(ACT_RELIG)) %>%
+  ggplot(aes(x=relig_time_bins, y=mean_relig_minutes)) + 
+  geom_linerange(aes(x=relig_time_bins, ymin=0, ymax=mean_relig_minutes, group=kids), 
+                 color="lightgray", 
+                 position=position_dodge(0.3), 
+                 size=1.5) + 
+  geom_point(aes(color=kids), position=position_dodge(0.3), size=3) + 
+  theme_bw() +
+  xlab('Binned Religious Time (in minutes)') +
+  ylab('Average Time per Day (in minutes)') +
+  labs(title = 'Average Time Spent on Religious Activities by Children Status',
+       caption = "Figure 35: Average Time Spent on Religious Activities by Children Status")  +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.caption = element_text(hjust = 0.5))
+
+time_jay %>% 
+  group_by(kids, social_time_bins) %>% 
+  summarize(n = n(), mean_social_minutes = mean(ACT_SOCIAL)) %>%
+  ggplot(aes(x=social_time_bins, y=mean_social_minutes)) + 
+  geom_linerange(aes(x=social_time_bins, ymin=0, ymax=mean_social_minutes, group=kids), 
+                 color="lightgray", 
+                 position=position_dodge(0.3), 
+                 size=1.5) + 
+  geom_point(aes(color=kids), position=position_dodge(0.3), size=3) +
+  theme_bw() +
+  xlab('Binned Social Time (in minutes)') +
+  ylab('Average Time per Day (in minutes)') +
+  labs(title = 'Average Time Spent on Social Activities by Children Status',
+       caption = "Figure 36: Average Time Spent on Social Activities by Children Status")  +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.caption = element_text(hjust = 0.5))
+```
+
+The graphs above (Figure 33 through Figure 36) show the average amount of time spent for each type of activity by different blocks of time span and by the presence of children. Figure 33 appears to indicate that for the most parts across our time-worked bins, both households with and without children have similar mean minutes spent working per day. Based on Figure 34, it seems to indicate that family with children report slightly more time spent traveling than the no children group. Figure 35 shows roughly equal time spent between those with and without children, except in the 90+ minute block, which shows a higher mean for those with no children. The last plot (Figure 36) is about time spent in social activities between those with and without children. In the first four time categories, the mean time spent in social activity is roughly equal across the households with and without children, but in the last time block, there is a clear difference in the means between those with and those without children. 
+
 **- How does an individual's work time correlate to their other activities?**
 
+```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
+time_jay %>%  
+  ggplot(aes(x=ACT_WORK, y=ACT_TRAVEL, color = kids)) + 
+  geom_point() +
+  theme_bw() +
+  xlab('Time Spent Working (in minutes)') +
+  ylab('Time Spent Traveling (in minutes)') +
+  labs(title = 'Scatterplot of Time Spent Working VS. Traveling by Children Status',
+       caption = "Figure 37: Scatterplot of Time Spent Working VS. Traveling by Children Status")  +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.caption = element_text(hjust = 0.5))
+```
 
+The scatterplot of the amount of time spent working versus that of traveling by the presence of children in the family is shown in Figure 37. Overall, it attempts to describe the pattern that the people who work harder spend less time traveling, regardless of the presence of children. Similarly, the people who do not allocate much time working tend to spend more time traveling.
 
+```{r, echo=FALSE, message = FALSE, warning = FALSE, fig.align='default', fig.show="hold", out.width="50%"}
+time_jay %>%  ggplot(aes(x=ACT_WORK, y=ACT_TRAVEL, color = kids)) + 
+  geom_smooth(method=lm) +
+  coord_cartesian(ylim=c(40,100),xlim=c(0,1400)) +
+  theme_bw() +
+  xlab('Time Spent Working (in minutes)') +
+  ylab('Time Spent Traveling (in minutes)') +
+  labs(title = 'Time Spent Working VS. Traveling by Children Status',
+       caption = "Figure 38: Time Spent Working VS. Traveling by Children Status")  +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.caption = element_text(hjust = 0.5))
+
+time_jay %>%  ggplot(aes(x=ACT_WORK, y=ACT_SOCIAL, color = kids)) + 
+  geom_smooth(method=lm) + 
+  coord_cartesian(ylim=c(0,400),xlim=c(0,1400)) +
+  theme_bw() +
+  xlab('Time Spent Working (in minutes)') +
+  ylab('Time Spent on Social Activities (in minutes)') +
+  labs(title = 'Time Spent Working VS. Social Activities by Children Status',
+       caption = "Figure 39: xTime Spent Working VS. Social Activities by Children Status")  +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.caption = element_text(hjust = 0.5))
+```
+
+To better estimate how respondents use their time, and to look for signs of interaction or correlation between different activities, we used a regression line on our data. In detail, the plots have the work time on x-axis and other activity time on y-axis. And the lines are divided into 2 lines, one corresponding to children, and the other one corresponding to no children. Based on Figure 38, where it shows the relationship between travel time and work time, we see that respondents with children report about the same amount of travel time as time spent working increases. However, for the respondents with no children, there is a  steeper slope indicating that more time working might correlate to more time spent traveling. Looking at Figure 39, we observe among both respondents with children and those without, as minutes work increases, the amount of social time decreases.
+
+```{r, echo=FALSE, message = FALSE, warning = FALSE, fig.align='default', fig.show="hold", out.width="50%"}
+time_jay %>% 
+  filter(kids=="no children") %>% 
+  select(ACT_WORK, ACT_SOCIAL, ACT_TRAVEL, ACT_RELIG) %>% 
+  cor() %>% 
+  ggcorrplot(method="square", lab=TRUE) + 
+  theme_bw() +
+  xlab(' ') +
+  ylab(' ') +
+  labs(title = 'Correlation Matrix of Activities - No Children',
+       caption = "Figure 40: Correlation Matrix of Activities - No Children")  +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.caption = element_text(hjust = 0.5))
+
+# a correlation matrix of our time data, with kids, for work =0
+time_jay %>% 
+  filter(kids=="children") %>% 
+  select(ACT_WORK, ACT_SOCIAL, ACT_TRAVEL, ACT_RELIG) %>% 
+  cor() %>% 
+  ggcorrplot(method="square", lab=TRUE) +
+  theme_bw() +
+  xlab(' ') +
+  ylab(' ') +
+  labs(title = 'Correlation Matrix of Activities - Children',
+       caption = "Figure 41: Correlation Matrix of Activities - Children")  +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.caption = element_text(hjust = 0.5))
+```
+
+We also used a correlation matrix of our time-based variables to understand the numerical association between them. According to Figure 40, among the no children group, there appears a moderate negative relation between work and social minutes, indicating that as minutes in work increase, minutes engaged in social time decrease. We should not be surprised at this based on the example charts from above. Figure 41 illustrates the correlations for the households with children. This group has a slightly lower strength of the possible correlations between our categories.
 
 <hr>
 
 ## **Conclusion**
 
-The IPUMS Time-Use data set covers a wide range of social topics and demographic with the ability to create and download a data-set customized to your own needs. 
-
-<h4>Time Usage Over Time</h4>
-Time spent doing religious activities has decreased and time spent working has also decreased an equal amount across all regions in the U.S. 
-<h4>Life Satisfaction & Time Usage</h4>
-The more a person can diversify their daily activities the greater their perceived life satisfaction will be 
-<h4>Health & Time Usage</h4>
-increased physical activity does not necessarily correlate to healthier BMI - other factors (nutrition, etc) must be involved
-<h4>Work-Life Balance</h4>
-Household with and without children, on the average, spend the same amount of time on the activities we examined.
-Work and social time have a negative correlation, work and the other activities have little correlation.  
-
+In conclusion, the U.S. citizens allocate their time similarly and differently from each other depending on numerous demographic, geographic, and social factors. Over the last 15 years, from 2004 to 2019, the amount of time spent for religious activities and work-related activities has shown a decreasing trend across all regions in the U.S. Also, Americans are determined to have higher life satisfaction when they can diversify their daily activities. In terms of the physical activities, American's health is not directly correlated to their physical activities itself, but there are other factors, such as nutrition, that are involved. Last but not least, the people who spend more time working tend to spend less time on social activities. In addition, the household spend the similar amount of time on different activities regardless of the presence of children. 
 
 <hr>
 
 ## **Personal Contributions**
 
 #### **Jaeyeon Won**
-As a project coordinator, not only did I contribute to the Exploratoy analysis, introduction, and conclusion sections of this paper, but I also supervised the overall project. I joined all team members' individual piecies of work into one final file by removing unnecessary outputs and analysis and revising them with consistent contents, organizations, tones, visual designs. My individual analysis can befound on Github (*Jaeyeon_part.Rmd*) as .html and .Rmd files.
+As a project coordinator, not only did I contribute to the Exploratoy analysis, introduction, and conclusion sections of this paper, but I also supervised the overall project. I joined all team members' individual piecies of work into one final file by removing unnecessary outputs and analysis and revising them with consistent contents, organizations, tones, visual designs. My individual analysis can be found on Github (*Jaeyeon_part.Rmd*) as .html and .Rmd files.
 
 #### **Becca Barrick**
 I contributed to the project by brainstorming themes we could explore and looking into various data sets on Kaggle. After deciding on our topic, I contributed by completing the time usage over time section of our project. I looked into how time spent on religious activities has changed over time, how time spent working has changed over time, and finally how time spent working in each specific region has changed over time. My individual analysis can be found on Github (*beccadata.Rmd*) as .html and .Rmd files. 
 
 #### **Alec Meyer**
-My individual analysis can befound on Github (*AlecMeyer.Rmd*) as .html and .Rmd files.
+I contributed to the project by exploring data related to how social activities and work relate to life satisfaction. I also viewed how people spending their time would change the way they perceive their life. My individual analysis can be found on Github (*AlecMeyer.Rmd*) as .html and .Rmd files.
 
 #### **Tessa Mendoza**
-I contributed to this project by exploring possible datasets, finding the time use dataset, and extracting the dataset according to the group's data exploration interests. I also created and organized the initial structure of the proposal and report documents. In addition, I completed the analysis for the Health section of the report. My individual analysis can befound on Github (*individual_data_tessa.Rmd*) as .html and .Rmd files.
+I contributed to this project by exploring possible datasets, finding the time use dataset, and extracting the dataset according to the group's data exploration interests. I also created and organized the initial structure of the proposal and report documents. In addition, I completed the analysis for the Health section of the report. My individual analysis can be found on Github (*individual_data_tessa.Rmd*) as .html and .Rmd files.
 
 #### **Jay Maxwell**
-My individual analysis can befound on Github (*jay.Rmd*) as .html and .Rmd files.
+I analyzed the correlations between time spent at work and time spent engaging in other activities. I also examined whether having children has an impact on the time spent engaging in selected activities from our data set. My individual analysis can be found on Github (*jay.Rmd*) as .html and .Rmd files.
 
 <hr>
 
