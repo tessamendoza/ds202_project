@@ -13,7 +13,7 @@ Every day, individuals in America differently allocate their time between variou
 ## **Research Questions**
 To achieve our goal, we have developed five general areas of exploration with the following five research questions: 
 
-- What are the overall time usage patterns for different demographics?
+- What are the overall time usage patterns for different demographic?
 - How did the trend of time usage change over the last 15 years? 
 - How are individual's perceived life satisfaction and time usage related?
 - How are individual's general health status and time usage related? 
@@ -38,7 +38,7 @@ Our dataset and the codebook can be found at https://github.com/tessamendoza/ds2
 
 ## **Exploratory Analysis**
 
-This section explores the basic information about how demographics and living locations are associated to time usage. The demographic factors include age, gender, and race, and the geographical factors involve region and state. The analysis on associations between geography and time use does not include Alaska and Hawaii.
+This section explores the basic information about how demographic and living locations are associated to time usage. The demographic factors include age, gender, and race, and the geographical factors involve region and state. The analysis on associations between geography and time use does not include Alaska and Hawaii.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results=FALSE}
 library(tidyverse)
@@ -128,6 +128,7 @@ levels(time_jaeyeon_longer$TIME_ACTIVITY)
 ```
 
 **- How Does Time Usage Differ By Age Group?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, fig.align='center'}
 # Age Group
 time_jaeyeon_longer = time_jaeyeon_longer %>%
@@ -161,6 +162,7 @@ time_jaeyeon_longer %>%
 Figure 1 illustrates the proportional bar graph of American's time usage pattern by different age groups. We observe here that the amount of time used on personal care stays similar across different age groups. While Americans spend more time on eating and drinking, religious activities, and socializing as they get older, their time use on relatively active activities, such as sports, travels, and work, shows a decreasing trend as getting older.
 
 **- How Does Time Usage Differ By Gender?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, fig.align='center'}
 # Side by Side Barplot
 time_jaeyeon_longer %>%
@@ -184,6 +186,7 @@ time_jaeyeon_longer %>%
 We see the time usage pattern by gender in Figure 2. Here, it is clear that both males and females spend the most time on personal care and the least time on religious activities. Looking closer, we can also see that males spend relatively more time on socializing, working, traveling, eating and drinking, and exercising than females. On the other hand, females spend more time on their personal care and religious activities than males do.
 
 **- How Does Time Usage Differ By Race?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, fig.align='center'}
 # Proportional Barplot
 time_jaeyeon_longer %>%
@@ -206,6 +209,7 @@ time_jaeyeon_longer %>%
 Analyzing the the relationship between race and time usage, we found the results above in Figure 3. In detail, we found that different races have a similar trend in general. However, Hawaiian Pacific islanders as well as Asians are determined to spend more time working, on average, than other races. Asians also tend to allocate more time for personal care and eating and drinking. Despite Asians' tendency to work more, they spend the least time socializing, relaxing, and doing leisure activities than other races do.
 
 **- How Does Time Usage Differ By U.S. Region?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, fig.align='center'}
 # time_jaeyeon_region for map
 time_jaeyeon_region = time_jaeyeon_longer %>%
@@ -249,6 +253,7 @@ time_jaeyeon_region %>%
 In terms of the geographical relations to American's time use pattern, we firstly looked at the regions in the United States, which are divided into the four following areas: West, Midwest, Northeast, and South. Based on Figure 4, we observe that people in the West tend to eat and drink the most (71 minutes per day) while the people in the South spend the least time on this activity (64 minutes per day). Similarly, Western people spend around 22 minutes per day on sports, exercise, and recreation, as the leading active region, whereas the Southern people spend the least amount of time (17 minutes per day). On the contrary, these two regions show an opposite pattern in terms of the socializing, relaxing, and leisure activities. For example, Southern residents spend the most time (302 minutes per day) for these activities, whereas the Western people spend the least time (279 minutes per day). Regarding personal care and religious activities, both activities are the most popular in the South while they are both the least popular in the Northeast. The residents in the Midwest are the most hard-working people, while they spend the least time traveling. Unlike from the Midwestern people, the Northeast spends the least time on work-related activities and the most time traveling.
 
 **- How Does Time Usage Differ By State?**
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results=FALSE}
 # time_jaeyeon_state for map
 time_jaeyeon_state = time_jaeyeon_longer %>%
@@ -738,7 +743,10 @@ Comparing the eating and drinking activities and personal care activities, we ob
 
 ## **Time Usage Over Time**
 
+This part of the paper investigates how the time usage pattern has changed over the last 15 years from 2004 to 2019. We specifically analyzed the time use trend of the religious and spiritual activities as well as the work and work-related activities.
+
 **- Has time spent engaged in religious and spiritual activities changed over the last 15 years?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 time %>% 
   rename(religion = ACT_RELIG) %>%
@@ -753,9 +761,10 @@ time %>%
         plot.caption = element_text(hjust = 0.5))
 ```
 
-The amount of time people spend participating in religious activities has remained stable since 2004. Every year, the majority is just below 500 minutes per day with a few outliers that spend much larger amounts of time, even going to 1000 minutes per day. Numbers have been relatively lower since 2013. 
+Figure 12 shows the the amount of time people spend participating in religious activities. Here, we see that it has remained stable since 2004. Every year, the majority is just below 500 minutes per day with a few outliers that spend much larger amounts of time, even going to 1000 minutes per day. Numbers have been relatively lower since 2013. 
 
 **- Are Americans working more or less than they used to?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 ggplot(time, mapping = aes(x = YEAR, y = ACT_WORK)) + 
   geom_point() + 
@@ -768,9 +777,10 @@ ggplot(time, mapping = aes(x = YEAR, y = ACT_WORK)) +
         plot.caption = element_text(hjust = 0.5))
 ```
 
-The time spent working has also remained pretty stable since 2004. Most people spend at least 1000 minutes a day at work and many people spend up to 1500 minutes a day working. I did some math and realized that 1000 minutes a day equates to over 16.5 hours a day. This data set considers "work" to be activities physically at work, completing any work activities like going to lunch or playing golf with a client, doing anything that makes you money, applying for jobs or interviewing, and many other activities. Obviously not everyone works every single day for that long due to holidays, appointments, and vacations, but 16.5 hours a day is a baseline for lots of people in America. There is a slight dip in minutes worked in 2013, 2016, and 2018. There are many people spending zero minutes working per day which could be because of unemployed adults or children, as this data set includes people as young as 15.
+According to Figure 13, the time spent working has also remained pretty stable since 2004. Most people spend at least 1000 minutes a day at work and many people spend up to 1500 minutes a day working. We did some math and realized that 1000 minutes a day equates to over 16.5 hours a day. This data set considers "work" to be activities physically at work, completing any work activities like going to lunch or playing golf with a client, doing anything that makes you money, applying for jobs or interviewing, and many other activities. Obviously not everyone works every single day for that long due to holidays, appointments, and vacations, but 16.5 hours a day is a baseline for lots of people in America. There is a slight dip in minutes worked in 2013, 2016, and 2018. There are many people spending zero minutes working per day which could be because of unemployed adults or children, as this data set includes people as young as 15.
 
 **- How has time spent working changed in various regions of the U.S.?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 time$SEX <- factor(time$SEX, levels = c(1, 2), 
                  labels = c("M", "F"))
@@ -790,14 +800,15 @@ ggplot(time, aes(x = YEAR, y = ACT_WORK, fill = SEX)) +
         plot.caption = element_text(hjust = 0.5))
 ```
 
-Across all regions, minutes per day spent working has been steadily decreasing since 2004. The decline seems to be similar across all regions, with no region seeing a more significant change than any other. The region with the people who work the most is the south. Again, work isn't only the traditional 9-5 in this data set- it includes any work related activities that can make money, applying/interviewing for jobs, or reading things for work at home. People in the south spend more time working than any other region by quite a significant amount. The midwest and the west have people who work similar amounts, and the northeast is where people spend the least amount of time working. I also included gender in my analysis. From what this plot shows, men and women work similar amounts in every region and they are both experiencing the same decline in time spent working since 2004.
+We also explored the work-related activity time use by region and gender, as shown in Figure 14. Across all regions, minutes per day spent working has been steadily decreasing since 2004. The decline seems to be similar across all regions, with no region seeing a more significant change than any other. The region with the people who work the most is the south. Again, work isn't only the traditional 9-5 in this data set- it includes any work related activities that can make money, applying/interviewing for jobs, or reading things for work at home. People in the south spend more time working than any other region by quite a significant amount. The midwest and the west have people who work similar amounts, and the northeast is where people spend the least amount of time working. We also included gender in my analysis. From what this plot shows, men and women work similar amounts in every region and they are both experiencing the same decline in time spent working since 2004.
 
 <hr>
 
 ## **Life Satisfaction & Time Usage**
-The data in this portion was taken from removing all rows = null in the WBLADDER column. This analysis will show you peoples life satisfaction, work, and social activities around the United States.
 
-**- In what ways do people spend their time?**
+This part of analysis shows American's life satisfaction with respect to their time allocation between different types of activities, especially focusing on the work and social activities.
+
+**- How are each type of activities related to life satisfaction?**
 
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, fig.align='default', fig.show="hold", out.width="50%"}
 time1 <- time %>%
@@ -874,13 +885,11 @@ ggplot(time1, aes(x = WBLADDER, y = ACT_WORK)) + geom_bar(fill = 'coral4', stat 
         plot.caption = element_text(hjust = 0.5))
 ```
 
-Each of these above graphs shows average minutes of time at each life quality that people reported for the activity. The most interesting graph of these to me is the Religious activities. There is a large drop off from the first bar where I would assume people are being forced to attend religious activites. Another interesting set would be Personal Care graph. Personal care includes sleep which will take up most of the personal care time. Based on this it shows that the more you sleep the lower your life satisfaction.
+Each of these above graphs shows the average minutes of time at each life quality that people reported for the activity. The most interesting graph of these is the religious activities. There is a large drop off from the first bar where we would assume people are being forced to attend religious activities. Another interesting set would be the personal care graph. Personal care includes sleep which will take up most of the personal care time. Based on this it shows that the more you sleep the lower your life satisfaction.
 
-**- Which region in the U.S. has the highest life satisfaction? least?**
+**- Which region in the U.S. has the highest / lowest life satisfaction?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
-#ggplot(time2, aes( x = REGION, y = WBLADDER)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Region", y = "Satisfaction", title = "Satisfaction by region") 
-
-
 time3 <- time %>%
   filter(WBLADDER != 999)
 
@@ -955,15 +964,14 @@ ggplot(stateMap %>%
   annotate(geom = "text", x = -68.8, y = 43.2, label = "NH", size = 3, fontface = "bold") +
   annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
 
-#Highest Satisfaction
-satByState[which.max(satByState$avgSat),]
-#Lowest Satisfaction
-satByState[which.min(satByState$avgSat),]
+satByState %>%
+  arrange((avgSat))
 ```
 
-Based on this data there is not a specific region that is more satisfied as they are all fairly equal. However Hawaii is the least satisfied state whereas DC is the most satisfied. 
+Based on Figure 22, most of the regions seem to show a fairly equal life satisfaction. However, Vermont, Idaho, New Mexico, and South Dakota are the most satisfied states with the average satisfaction rating of around 7.4 - 7.5. On the other hand, DC, Utah, Wyoming, Nevada, and New Jersey are the lesat satisfied states with the average life satisfaction rating of around 6.7 - 6.8.
 
 **- Which region spends the most time working?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 time4 <- time %>%
   filter(ACT_WORK != 0)
@@ -979,91 +987,14 @@ ggplot(time4, aes(x = REGION, y = ACT_WORK, fill = REGION)) + geom_bar(stat = "s
        fill = 'Region')  +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"),
         plot.caption = element_text(hjust = 0.5))
-
-
-WorkByState <- time4 %>%
-  group_by(STATEFIP) %>%
-  summarize(avgWork = mean(ACT_WORK)) %>%
-  left_join(statecode, by = c("STATEFIP" = 'STATEFIP'))
-stateMap <- states %>%
-  left_join(WorkByState, by = c('region' = 'STATE'))
-
-ggplot(stateMap %>% 
-         group_by(region), 
-       aes(x=long, y=lat, fill = avgWork)) + 
-  geom_polygon(aes(group=group), color = "black") + 
-  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
-  theme_map() +
-  labs(title = 'Average Time Spent on Work & Work-Related Activities Per Day (in minutes)',
-       fill = 'Average Time \n(in minutes)',
-       caption = 'Figure 24: Map of Average Time Spent on Work & Work-Related Activities by State (in minutes)') +
-  theme(legend.position = c(0.85, 0.2),
-        legend.background = element_rect(linetype = "solid", colour ="black"),
-        plot.title = element_text(hjust = 0.5, face = "bold"),
-        plot.caption = element_text(hjust = 0.5)) +
-  scale_fill_gradient(low = "white", high = "#992222") +
-  annotate(geom = "text", x = -120, y = 47.5, label = "WA", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -120.5, y = 44, label = "OR", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -119.8, y = 37, label = "CA", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -114.5, y = 43.8, label = "ID", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -116.8, y = 39.6, label = "NV", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -111.5, y = 39.4, label = "UT", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -111.5, y = 34.5, label = "AZ", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -109, y = 47, label = "MT", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -107.5, y = 43, label = "WY", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -105.5, y = 39, label = "CO", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -106, y = 34.5, label = "NM", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -100.7, y = 47.5, label = "ND", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -100.5, y = 44.5, label = "SD", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -100, y = 41.5, label = "NE", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -98.8, y = 38.5, label = "KS", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -96.5, y = 35.5, label = "OK", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -99.5, y = 31.5, label = "TX", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -94.5, y = 46, label = "MN", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -93.3, y = 42.2, label = "IA", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -92.5, y = 38.5, label = "MO", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -92.5, y = 35, label = "AR", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -92.6, y = 31.3, label = "LA", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -90, y = 45, label = "WI", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -89, y = 40, label = "IL", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -89.5, y = 33, label = "MS", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -84.8, y = 43.5, label = "MI", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -86, y = 40, label = "IN", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -84.5, y = 37.7, label = "KY", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -86.3, y = 35.8, label = "TN", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -86.7, y = 33, label = "AL", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -82.7, y = 40.3, label = "OH", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -83.3, y = 32.8, label = "GA", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -81.5, y = 28.5, label = "FL", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -77.8, y = 40.9, label = "PA", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -80.8, y = 38.5, label = "WV", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -78.5, y = 37.5, label = "VA", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -79.5, y = 35.7, label = "NC", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -80.8, y = 34, label = "SC", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -75, y = 43, label = "NY", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -69, y = 45.5, label = "ME", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -74.5, y = 36.5, label = "DC", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -74, y = 37.5, label = "MD", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -73.8, y = 38.5, label = "DE", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -73, y = 39.5, label = "NJ", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -72, y = 40.2, label = "CT", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -70.5, y = 40.7, label = "RI", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -68.5, y = 42, label = "MA", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -68.8, y = 43.2, label = "NH", size = 3, fontface = "bold") +
-  annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
-
-#most work
-WorkByState[which.max(WorkByState$avgWork),]
-#least work
-WorkByState[which.min(WorkByState$avgWork),]
 ```
-Based on the regional graph and US map it is easy to see that the South is the highest working region.
+
+According to Figure 23, where it shows the time use trend by region, it is easy to see that all of the regions work for a similar amount of time per day. However, the South is determined to be the highest working region with whereas the Northeast and West are the lowest working regions.
 
 **- Which region is the most social? Does this correspond with life satisfaction?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 time5 <- time 
-
-#ggplot(time2, aes( x = REGION, y = ACT_SOCIAL)) + geom_bar(stat = "summary", fun.y = "mean") +   labs(x = "Region", y = "Total Minutes", title = "Social Activites")
 
 SocByState <- time5 %>%
   group_by(STATEFIP) %>%
@@ -1072,37 +1003,30 @@ SocByState <- time5 %>%
 stateMap <- states %>%
   left_join(SocByState, by = c('region' = 'STATE'))
 
-#ggplot(stateMap %>% group_by(region), aes(x=long, y=lat, fill = avgSoc)) + 
- # geom_polygon(aes(group=group), color = "black") + theme_map() + labs(title = "Average Social Activites By State") +
-#  scale_fill_gradient(low='white', high="#992222")
-
 ggplot(time1, aes(fill = REGION, x = WBLADDER, y = ACT_SOCIAL)) + geom_bar(stat = "summary", fun.y = "mean", position = "dodge") +   
   labs(x = "Satisfaction", y = "Total Minutes", title = "Social Activites by Region") +
   theme_bw() +
   xlab('Satisfaction') +
   ylab('Average Time Spent per Day (in minutes)') +
   labs(title = 'Overall Satisfaction by Region',
-       caption = "Figure 25: American's Satisfaction by Region",
+       caption = "Figure 24: American's Satisfaction by Region",
        fill = 'Region')  +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"),
         plot.caption = element_text(hjust = 0.5))
-
-#most social
-#SocByState[which.max(SocByState$avgSoc),]
-#least social
-#SocByState[which.min(SocByState$avgSoc),]
 ```
 
-Based on the above graphs you can see that the West is the least social by far. This doesn't necessarily correspond to life satisfaction and the west was equally satisfied compared to the other states.
+Figure 24 describes the relationship between the average time spent on social activities per day and the overall life satisfaction by region. Here, we observe that the West is the least social by far. This doesn't necessarily correspond to life satisfaction and the west was equally satisfied compared to the other states.
 
 <hr>
 
 ## **Health & Time Usage**
 
 #### **Physical Activity**
-The data provided in this dataset includes individuals ranging from 15-85 years of age. Specifically, this section of analysis explored the 'Sports' time use variable, which highlights the amount of time an individual spent on sports, exercise, and recreation in a day. This will be referenced as physical activity in the future.
+
+The data provided in this dataset includes individuals ranging from 15-85 years of age. Specifically, this section of analysis explores the 'Sports' time use variable, which highlights the amount of time an individual spends on sports, exercise, and recreation in a day. This will be referenced as physical activity in the future.
 
 **- Which age range spends the most time engaging in physical activity?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 age <- time %>% 
   mutate(agegroup = case_when(AGE >= 15  & AGE <= 19 ~ '15-19',
@@ -1124,16 +1048,16 @@ ggplot(sportsByAge, aes(x = agegroup, y = avg_time, fill = agegroup)) + geom_bar
   xlab('Age') +
   ylab('Average Time Spent per Day (in minutes)') +
   labs(title = 'Average Active Time by Age',
-       caption = "Figure 26: Average Active Time Spent by Age Group",
+       caption = "Figure 25: Average Active Time Spent by Age Group",
        fill = 'Age Group')  +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"),
         plot.caption = element_text(hjust = 0.5))
 ```
 
-The 15-19 year old group spends, on average, the greatest time doing sports, exercise and recreation - over double the amount of time compared to every other age group. Activity level tends to decline as age increases. 
-
+Based on Figure 25, the 15-19 year old group spends, on average, the greatest time doing sports, exercise and recreation - over double the amount of time compared to every other age group. Activity level tends to decline as age increases. 
 
 **- Does time spent engaging in physical activity vary by state?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 statecode <- statecode %>%
   mutate(STATE = tolower(STATE))
@@ -1152,7 +1076,7 @@ ggplot(stateMap %>% group_by(region), aes(x=long, y=lat, fill = avgTime)) +
   theme_map() +
   labs(title = 'Average Active Time Per Day (in minutes)',
        fill = 'Average Time \n(in minutes)',
-       caption = 'Figure 27: Map of Average Active Time Per Day by State (in minutes)') +
+       caption = 'Figure 26: Map of Average Active Time Per Day by State (in minutes)') +
   theme(legend.position = c(0.85, 0.2),
         legend.background = element_rect(linetype = "solid", colour ="black"),
         plot.title = element_text(hjust = 0.5, face = "bold"),
@@ -1209,16 +1133,12 @@ ggplot(stateMap %>% group_by(region), aes(x=long, y=lat, fill = avgTime)) +
   annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
 ```
 
-The plot above utilized state data from the R package 'mapdata,' joined with a column of state names and codes (generated by the extract builder and found in the GitHub Repository). As shown in the map, physical activity does vary by state. In general, the northwest regions are among the most active, while states in the south (especially southeast) are less active. 
-. 
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 mostActive5 <- sportsByState %>%
   arrange(desc(avgTime)) %>%
   head(5)
 mostActive5
 ```
-
-The five most active states are Vermont, Montana, Hawaii, Wyoming, and Colorado  - each averaging between 25 and 30 active minutes per day.
 
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 leastActive5 <- sportsByState %>%
@@ -1227,9 +1147,10 @@ leastActive5 <- sportsByState %>%
 leastActive5
 ```
 
-The least active states are Delaware, Alabama, Mississippi, South Carolina, and Louisiana - each averaging between 13 and 16 active minutes per day.
+The plot above (Figure 26) utilized state data from the R package 'mapdata,' joined with a column of state names and codes (generated by the extract builder and found in the GitHub Repository). As shown in the map, physical activity does vary by state. In general, the Northwest regions are among the most active, while states in the south (especially southeast) are less active. The five most active states are Vermont, Montana, Hawaii, Wyoming, and Colorado  - each averaging between 25 and 30 active minutes per day. The least active states are Delaware, Alabama, Mississippi, South Carolina, and Louisiana - each averaging between 13 and 16 active minutes per day.
 
 **- Do activity levels among youth (individuals under 20) vary by state?**
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 youthByState <- age %>%
   filter(AGE <= 20) %>%
@@ -1246,7 +1167,7 @@ ggplot(youthStateMap %>% group_by(region), aes(x=long, y=lat, fill = avgTime)) +
   theme_map() +
   labs(title = 'Youth (under 20) Average Active Time Per Day (in minutes)',
        fill = 'Average Time \n(in minutes)',
-       caption = 'Figure 28: Map of Youth Average Active Time Per Day by State (in minutes)') +
+       caption = 'Figure 27: Map of Youth Average Active Time Per Day by State (in minutes)') +
   theme(legend.position = c(0.85, 0.2),
         legend.background = element_rect(linetype = "solid", colour ="black"),
         plot.title = element_text(hjust = 0.5, face = "bold"),
@@ -1304,11 +1225,12 @@ ggplot(youthStateMap %>% group_by(region), aes(x=long, y=lat, fill = avgTime)) +
   
 ```
 
-States in the midwest and northwest tend to have more active youth than states in the southwest and southeast regions. Vermont has the most active youth.
-
+According to Figure 27, states in the Midwest and Northwest tend to have more active youth than states in the Southwest and Southeast regions. Vermont has the most active youth.
 
 #### **BMI**
-BMI, or Body Mass Index, is a measure of body fat based on height and weight that is commonly used in the healthcare setting. The BMI data was recorded in the ATUS survey series between 2006-2008 and 2014-2016. The BMI ranges (underweight, normal, overweight, and obese), are determined according to the Centers for Disease Control (CDC) standard. It is important to note that BMI is NOT the most accurate predictor of health status, however, it is a useful tool and provides a general marker for individual health, especially on a large-scale level. More information on BMI can be found on the CDC's website (see works cited section for link). 
+
+BMI, or Body Mass Index, is a measure of body fat based on height and weight that is commonly used in the healthcare setting. The BMI data was recorded in the ATUS survey series between 2006-2008 and 2014-2016. The BMI ranges (underweight, normal, overweight, and obese), are determined according to the Centers for Disease Control (CDC) standard. It is important to note that BMI is NOT the most accurate predictor of health status, however, it is a useful tool and provides a general marker for individual health, especially on a large-scale level. More information on BMI can be found on the CDC's website (see works cited section for link).
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 bmi <- age %>%
   filter(YEAR == 2006 | YEAR == 2007 | YEAR == 2008 |
@@ -1327,14 +1249,15 @@ ggplot(bmi, aes(x = BMI, fill = bmiStatus, color = bmiStatus)) +
   scale_fill_manual(values = c("#28C40C", "#DE2905", "#E8A201", "#8E9CA1")) +
   scale_color_manual(values = c("#28C40C", "#DE2905", "#E8A201", "#8E9CA1")) +
   xlab('BMI') +
-  ylab('Number of Respondants') +
+  ylab('Number of Respondents') +
   labs(title = 'Distribution of BMI',
-       caption = "Figure 29: Distribution of BMI Status")  +
+       caption = "Figure 28: Distribution of BMI Status")  +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"),
         plot.caption = element_text(hjust = 0.5))
 ```
 
-This plot shows the distribution of BMI's among individuals. BMI status was calculated using the CDC standard and was manually added to the dataset. The most frequent BMI values occur at the higher end of the normal range and at the lower end of the overweight category. 
+Figure 28 shows the distribution of BMI's among individuals. BMI status was calculated using the CDC standard and was manually added to the dataset. The most frequent BMI values occur at the higher end of the normal range and at the lower end of the overweight category. 
+
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 bmiByState <- bmi %>%
   group_by(STATEFIP) %>%
@@ -1350,7 +1273,7 @@ ggplot(bmiStateMap %>% group_by(region), aes(x=long, y=lat, fill = avg_BMI)) +
   theme_map() +
   labs(title = 'Average Body Mass Index (BMI) by State',
        fill = 'Average BMI',
-       caption = 'Figure 30: Map of Average Body Mass Index (BMI) by State') +
+       caption = 'Figure 29: Map of Average Body Mass Index (BMI) by State') +
   theme(legend.position = c(0.85, 0.2),
         legend.background = element_rect(linetype = "solid", colour ="black"),
         plot.title = element_text(hjust = 0.5, face = "bold"),
@@ -1407,11 +1330,12 @@ ggplot(bmiStateMap %>% group_by(region), aes(x=long, y=lat, fill = avg_BMI)) +
   annotate(geom = "text", x = -72.5, y = 45.8, label = "VT", size = 3, fontface = "bold")
 
 ```
-This BMI map was made, using ggplot, by combining average BMI data for each state with an imported 'state' map (mentioned above). Colorado and Vermont have the healthiest individuals according to BMI, with the west coast, northeast, and Florida following closely behind. The midwest has a higher BMI and south regions have higher BMI, as does West Virginia.
+
+This BMI map was made, using ggplot, by combining average BMI data for each state with an imported 'state' map (mentioned above). Colorado and Vermont have the healthiest individuals according to BMI, with the West coast, Northeast, and Florida following closely behind. The Midwest has a higher BMI and South regions have higher BMI, as does West Virginia.
 
 #### **General Health**
 
-One of the variables within the dataset contains self-reported general health status from the survey respnodents. The participants were asked to rate their general health as "Excellent," "Very good," "Good," "Fair," or "Poor." Some participants did refuse to answer and others responded "Don't know."
+One of the variables within the dataset contains self-reported general health status from the survey respondents. The participants were asked to rate their general health as "Excellent," "Very good," "Good," "Fair," or "Poor." Some participants did refuse to answer and others responded "Don't know."
 
 ```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 health <- bmi %>%
@@ -1424,19 +1348,19 @@ ggplot(health, aes(x = GENHEALTH, fill = GENHEALTH)) +
   geom_bar() +
   theme_bw() +
   xlab('General Health') +
-  ylab('Number of Respondants') +
+  ylab('Number of Respondents') +
   labs(title = 'Distribution of Self-Reported General Health Status',
-       caption = "Figure 31: Distribution of Self-Reported General Health Status",
+       caption = "Figure 30: Distribution of Self-Reported General Health Status",
        fill = 'Health Status')  +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"),
         plot.caption = element_text(hjust = 0.5))
 ```
 
-The general distribution is as shown above: A majority of respondents consider themselves in 'very good' or 'good' health. Interestingly, this slightly contradicts the BMI, objective measurement of health, where a larger majority of individuals are categorized as 'overweight.'
+The general distribution is as shown above in Figure 30: A majority of respondents consider themselves in 'very good' or 'good' health. Interestingly, this slightly contradicts the BMI, objective measurement of health, where a larger majority of individuals are categorized as 'overweight.'
 
 **- How does an individual's health (BMI and general health) relate to the amount of time they spend being physically active?**
 
-```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
+```{r, echo=FALSE, message = FALSE, warning = FALSE, fig.align='default', fig.show="hold", out.width="50%"}
 bmiStatus <- bmi %>%
   mutate(bmiStatus = fct_relevel(bmiStatus, 
                             "underweight", "normal", "overweight", "obese")) %>%
@@ -1449,14 +1373,11 @@ ggplot(bmiStatus, aes(x = bmiStatus, y = avg_active, fill = bmiStatus)) +
   xlab('BMI Status') +
   ylab('Average Active Time per Day (in minutes)') +
   labs(title = 'Activity Levels by BMI Status',
-       caption = "Figure 32: Activity Levels by BMI Status",
+       caption = "Figure 31: Activity Levels by BMI Status",
        fill = 'BMI Status')  +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"),
         plot.caption = element_text(hjust = 0.5))
-```
 
-
-```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
 healthTable <- health %>%
   group_by(GENHEALTH) %>%
   summarise(avg_time = mean(ACT_SPORTS))
@@ -1467,49 +1388,26 @@ ggplot(healthTable, aes(x = GENHEALTH, y = avg_time, fill = GENHEALTH)) +
   xlab('General Health') +
   ylab('Average Active Time per Day (in minutes)') +
   labs(title = 'Average Active Time by General Health Status',
-       caption = "Figure 33: Average Active Time by General Health Status",
+       caption = "Figure 32: Average Active Time by General Health Status",
        fill = 'Health Status')  +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"),
         plot.caption = element_text(hjust = 0.5))
 ```
 
-Here, there is a general positive correlation between an individual's amount of activity time and their perceived health level. That is, those who consider themselves in good health tend to be more active. Is there a causal relationship? Do active individuals end up more healthy? Or are healthy individuals more able to complete physical activity? 
+Figure 31 and Figure 32 show the average active time per day by BMI status and by General health status, respectively. Here, there is a general positive correlation between an individual's amount of activity time and their perceived health level. That is, those who consider themselves in good health tend to be more active. 
 
 <hr>
 
 ## **Work-Life Balance**
 
-**- How does an individual's work time correlate to their other activities?**
+The last section of this report provides insight about how Americans balance their work and other activities. This exploration is analyzed in relation to the presence of children. 
 
 **- How does the presence or lack of children affect time-use?**
 
-```{r, echo=FALSE, message = FALSE, warning = FALSE, results=FALSE, fig.align='center'}
-# change the 0/1 option for kids / no kids into a useful factor
-time_jay <- time %>% mutate(kids = factor(ifelse(HH_CHILD==1,'children','no children')))
-
-# we are going to bin the data of our time use data for analysis
-
-breaks <- c(0,240,480,720,Inf)
-labels <-c("0-3.99 hours", "4-7.99 hours", "8-11.99 hours", "12+ hours")
-time_jay$work_time_bins <- cut(time_jay$ACT_WORK, breaks = breaks, labels = labels, right=FALSE)
-
-breaks <- c(0,120,240,360,480,Inf)
-labels <-c("0-1.99 hours", "2-3.99 hours", "4-5.99 hours", "6-7.99 hours","8+")
-time_jay$travel_time_bins <- cut(time_jay$ACT_TRAVEL, breaks = breaks, labels = labels, right=FALSE)
+**- How does an individual's work time correlate to their other activities?**
 
 
-breaks <- c(0,30,60,90,Inf)
-labels <-c("0-29 minutes", "30-59 minutes", "60-89 minutes", "90+ minutes")
-time_jay$relig_time_bins <- cut(time_jay$ACT_RELIG, breaks = breaks, labels = labels, right=FALSE)
-
-breaks <- c(0,60,120,180,240,Inf)
-labels <-c("0-59 minutes", "60-119 minutes", "120-179 minutes", "180-239 minutes"," 240+")
-time_jay$social_time_bins <- cut(time_jay$ACT_SOCIAL, breaks = breaks, labels = labels, right=FALSE)
-```
-
-In the IPUMS data, a day is considered 4am to 3:59am the following morning. Respondants are supposedly logging time use details in a diary which is then collated into a huge data set online, which we are able to subset into desired variables via a web interface. 
-
-In order to better visualize how the data is shaped between respondants with children and those without, we created discrete bins of the time data for several catagories: Time spent working, time spent traveling, time spent in religous activities, and time spent in social activities. We tried to break the discrete time values up into units which we felt reasonable, based on some quick data explorations when we first received the data set. 
+In order to better visualize how the data is shaped between respondents with children and those without, we created discrete bins of the time data for several categories: Time spent working, time spent traveling, time spent in religious activities, and time spent in social activities. We tried to break the discrete time values up into units which we felt reasonable, based on some quick data explorations when we first received the data set. 
 
 We also changed the 1 or 0 values under the "Children in the household" variable, HH_CHILD, to "children" and "no children."
 
@@ -1564,7 +1462,7 @@ time_jay %>%  filter(ACT_TRAVEL>0) %>%
         plot.caption = element_text(hjust = 0.5))
 ```
 
-Figure 34 shows the distribution of minutes spent in social time, excluding respondant who reported 0 social time. Figure 35 shows the reported time spent enaged in religious activities by people who reported more than 0 minutes per day engaged in religious activities. Figure 36 shows the time spent on traveling by children status. There are a lot of outliers in this boxplot of ACT_TRAVEL time between those with children and those without. . How much time can one really travel in a day?
+Figure 34 shows the distribution of minutes spent in social time, excluding respondent who reported 0 social time. Figure 35 shows the reported time spent enaged in religious activities by people who reported more than 0 minutes per day engaged in religious activities. Figure 36 shows the time spent on traveling by children status. There are a lot of outliers in this boxplot of ACT_TRAVEL time between those with children and those without. . How much time can one really travel in a day?
 
 
 #kids & work#
@@ -1705,7 +1603,7 @@ time_jay %>%  ggplot(aes(x=ACT_WORK, y=ACT_TRAVEL, color = kids)) +
   xlab("Daily Minutes WORK") + ylab("Daily Minutes TRAVEL") + coord_cartesian(ylim=c(40,100),xlim=c(0,1400))
 ```
 
-By using a regression line on our data, we might be able to better estimate how respondants use their time and look for signs of interaction or correlatoin between our variables. In this plot we see that respondans with children report about the same amount of travel time as time spent working increases. But for respondants with no children, there is a  steeper slope indicating that more time working might correlate to more time spent travelling. 
+By using a regression line on our data, we might be able to better estimate how respondents use their time and look for signs of interaction or correlation between our variables. In this plot we see that respondans with children report about the same amount of travel time as time spent working increases. But for respondents with no children, there is a  steeper slope indicating that more time working might correlate to more time spent traveling. 
 
 
 
@@ -1727,7 +1625,7 @@ time_jay %>%  ggplot(aes(x=ACT_WORK, y=ACT_SOCIAL, color = kids)) +
 
 ```
 
-Among both respondants with children and those without, as minutes work increases, the amount of social time decreases.
+Among both respondents with children and those without, as minutes work increases, the amount of social time decreases.
 
 
 
@@ -1763,7 +1661,7 @@ Removing children from the data set for our correlation only slightly lowers the
 
 ## **Conclusion**
 
-The IPUMS Time-Use data set covers a wide range of social topics and demographics with the ability to create and download a data-set customized to your own needs. 
+The IPUMS Time-Use data set covers a wide range of social topics and demographic with the ability to create and download a data-set customized to your own needs. 
 
 <h4>Time Usage Over Time</h4>
 Time spent doing religious activities has decreased and time spent working has also decreased an equal amount across all regions in the U.S. 
@@ -1781,17 +1679,21 @@ Work and social time have a negative correlation, work and the other activities 
 ## **Personal Contributions**
 
 #### **Jaeyeon Won**
+As a project coordinator, not only did I contribute to the Exploratoy analysis, introduction, and conclusion sections of this paper, but I also supervised the overall project. I joined all team members' individual piecies of work into one final file by removing unnecessary outputs and analysis and revising them with consistent contents, organizations, tones, visual designs. My individual analysis can befound on Github (*Jaeyeon_part.Rmd*) as .html and .Rmd files.
+
+My main contribution to this project was in cleaning and joining all pieces of data together, and creating the featured infographic (Figure 1). I also set up the video recordings, and helped translate this Final Report document from a Google Drive file into this Rmd file, with a special focus on formatting this report. A full summary of the work I did can be seen in the Nownes.R file.
 
 #### **Becca Barrick**
 I contributed to the project by brainstorming themes we could explore and looking into various data sets on Kaggle. After deciding on our topic, I contributed by completing the time usage over time section of our project. I looked into how time spent on religious activities has changed over time, how time spent working has changed over time, and finally how time spent working in each specific region has changed over time. My individual analysis can be found on Github (*beccadata.Rmd*) as .html and .Rmd files. 
 
 #### **Alec Meyer**
+My individual analysis can befound on Github (*AlecMeyer*) as .html and .Rmd files.
 
 #### **Tessa Mendoza**
-I contributed to this project by exploring possible datasets, finding the time use dataset, and extracting the dataset according to the group's data exploration interests. I also created and organized the initial structure of the proposal and report documents, and wrote the overview and information for the proposal. In addition, I completed the analysis for the Health section of the report. My individual code can be found as .Rmd and .html files on GitHub (*individual_data_tessa.Rmd*).
+I contributed to this project by exploring possible datasets, finding the time use dataset, and extracting the dataset according to the group's data exploration interests. I also created and organized the initial structure of the proposal and report documents. In addition, I completed the analysis for the Health section of the report. My individual analysis can befound on Github (*individual_data_tessa.Rmd*) as .html and .Rmd files.
 
 #### **Jay Maxwell**
-
+My individual analysis can befound on Github (*jay.Rmd*) as .html and .Rmd files.
 
 <hr>
 
