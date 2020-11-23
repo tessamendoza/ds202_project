@@ -1588,6 +1588,8 @@ In conclusion, the U.S. citizens allocate their time similarly and differently f
 
 ## **Personal Contributions**
 
+Our Github repository address is https://github.com/tessamendoza/ds202_project.git.
+
 #### **Jaeyeon Won**
 As a project coordinator, not only did I contribute to the Exploratoy analysis, introduction, and conclusion sections of this paper, but I also supervised the overall project. I joined all team members' individual piecies of work into one final file by removing unnecessary outputs and analysis and revising them with consistent contents, organizations, tones, visual designs. My individual analysis can be found on Github (*Jaeyeon_part.Rmd*) as .html and .Rmd files.
 
